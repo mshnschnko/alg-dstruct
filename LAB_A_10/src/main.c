@@ -39,6 +39,7 @@ List_t* StackListInit(void)
 		head->ptr = NULL;
 	else
 		return NULL;
+	return head;
 }
 
 void StackListDestroy(List_t* head)
@@ -88,12 +89,14 @@ int StackListIsEmpty(List_t* head)
 		return 0;
 }
 
-Array_t StackArrayInit()
+Array_t* StackArrayInit(void)
 {
-	Array_t StackArray;
-	StackArray.data = malloc(sizeof(Data_t));
-	StackArray.size = 1;
-	StackArray.top = 0;
+	Array_t* StackArray = malloc(sizeof(Array_t)); // = NULL;
+	//StackArray = malloc(sizeof(Array_t));
+	StackArray->data = NULL;
+	StackArray->data = malloc(sizeof(Data_t));
+	StackArray->size = 1;
+	StackArray->top = 0;
 	return StackArray;
 }
 
@@ -110,16 +113,32 @@ void StackArrayPush(Array_t* Array, Data_t Data)
 
 void StackArrayPop(Array_t* Array)
 {
-
+	free(&(Array->data[Array->top - 1]));
+	Array->size--;
+	Array->top--;
 }
 
-int main(void)
+Data_t StackArrayTop(Array_t* Array)
 {
-	MemoryLeaks();
+	return Array->data[Array->top - 1];
+}
+
+void StackArrayDestroy(Array_t* Array)
+{
+	free(Array);
+}
+
+int StackArrayIsEmpty(Array_t* Array)
+{
+	return 0;
+}
+
+void MenuList(void)
+{
 	int num;
 	List_t* StackList = NULL;
 	Data_t PushEl;
-	printf("\t\tMENU\n\tplease choose the option:\n1.Init List Stack\n2.Destroy Stack List\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\nPRESS ANY KEY TO EXIT\n");
+	printf("\t\tMENU\n\tplease choose the option:\n1.Init List Stack\n2.Destroy Stack List\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.FUCK GO BACK\n");
 	scanf_s("%i", &num);
 	while (num != 0)
 	{
@@ -154,9 +173,10 @@ int main(void)
 			break;
 		case 7:
 			system("cls");
-			printf("\t\tMENU\n\tplease choose the option:\n1.Init List Stack\n2.Destroy Stack List\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.EXIT\n");
+			printf("\t\tMENU\n\tplease choose the option:\n1.Init List Stack\n2.Destroy Stack List\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.FUCK GO BACK\n");
 			break;
 		case 0:
+			return;
 			break;
 		default:
 			printf("\nplease choose the option again: ");
@@ -164,6 +184,90 @@ int main(void)
 		}
 		scanf_s("%i", &num);
 	}
+}
+
+void MenuArray(void)
+{
+	int num;
+	Array_t* StackArray = NULL;
+	Data_t PushEl;
+	printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Array Stack\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\nFUCK GO BACK\n");
+	scanf_s("%i", &num);
+	while (num != 0)
+	{
+		switch (num)
+		{
+		case 1:
+			StackArray = StackArrayInit();
+			printf("\nArray Stack is created\n");
+			break;
+		case 2:
+			StackArrayDestroy(StackArray);
+			printf("\nArray Stack is destroyed\n");
+			break;
+		case 3:
+			printf("\nEnter the data: ");
+			scanf_s("%i", &PushEl);
+			StackArrayPush(StackArray, PushEl);
+			printf("\nElement %i was added to the stack\n", PushEl);
+			break;
+		case 4:
+			StackArrayPop(StackArray);
+			printf("\nUpper element was deleted from the stack\n");
+			break;
+		case 5:
+			printf("\nDATA: %i\n", StackArrayTop(StackArray));
+			break;
+		case 6:
+			if (StackArrayIsEmpty(StackArray))
+				printf("\nThe stack is Empty\n");
+			else
+				printf("\nThe stack contains any data\n");
+			break;
+		case 7:
+			system("cls");
+			printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Stack Array\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.FUCK GO BACK\n");
+			break;
+		case 0:
+			return;
+			break;
+		default:
+			printf("\nplease choose the option again: ");
+			break;
+		}
+		scanf_s("%i", &num);
+	}
+}
+
+int main(void)
+{
+	MemoryLeaks();
+	int num;
+	printf("\t\tWhat do you want work with?\n1.List\n2.Array\n0.EXIT\n\n");
+	scanf_s("%i", &num);
+	while (num != 0)
+	{
+		switch (num)
+		{
+		case 1:
+			system("cls");
+			MenuList();
+			break;
+		case 2:
+			system("cls");
+			MenuArray();
+			break;
+		case 0:
+			break;
+		default:
+			printf("\nplease choose the option again: ");
+			break;
+		}
+		system("cls");
+		printf("\t\tWhat do you want work with?\n1.List\n2.Array\n0.EXIT\n\n");
+		scanf_s("%i", &num);
+	}
+
 	//system("cls");
 	printf("\n\tGOODBYE!");
 	return 0;
