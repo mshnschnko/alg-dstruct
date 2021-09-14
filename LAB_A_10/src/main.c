@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define  _CRTDBG_MAP_ALLOC
+#define _CRT_SECURE_NO_WARNINGS
+#include <crtdbg.h>
 
 typedef int Data_t;
 
@@ -13,6 +16,20 @@ typedef struct
 {
 	List_el* ptr;
 }List_t;
+
+typedef struct
+{
+	Data_t* data;
+	size_t size;
+	size_t top;
+}Array_t;
+
+void MemoryLeaks(void)
+{
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+}
 
 List_t* StackListInit(void)
 {
@@ -71,8 +88,34 @@ int StackListIsEmpty(List_t* head)
 		return 0;
 }
 
+Array_t StackArrayInit()
+{
+	Array_t StackArray;
+	StackArray.data = malloc(sizeof(Data_t));
+	StackArray.size = 1;
+	StackArray.top = 0;
+	return StackArray;
+}
+
+void StackArrayPush(Array_t* Array, Data_t Data)
+{
+	if (Array->top < Array->size)
+		Array->data[Array->top++] = Data;
+	else
+	{
+		Array->data = realloc(Array->data, (Array->size + 1) * sizeof(Data_t));
+		Array->data[Array->top++] = Data;
+	}
+}
+
+void StackArrayPop(Array_t* Array)
+{
+
+}
+
 int main(void)
 {
+	MemoryLeaks();
 	int num;
 	List_t* StackList = NULL;
 	Data_t PushEl;
@@ -121,7 +164,7 @@ int main(void)
 		}
 		scanf_s("%i", &num);
 	}
-	system("cls");
+	//system("cls");
 	printf("\n\tGOODBYE!");
 	return 0;
 }
