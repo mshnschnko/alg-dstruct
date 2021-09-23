@@ -3,3 +3,6 @@ Release
 x64
 .vs
 LAB_A_10*
+**.xml
+packages
+.config
