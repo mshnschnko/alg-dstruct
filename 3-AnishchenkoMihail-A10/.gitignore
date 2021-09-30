@@ -1,0 +1,13 @@
+Debug
+Release
+x64
+.vs
+LAB_A_10*
+3-AnishchenkoMihail-A10*
+**.xml
+packages/
+.config
+3-AnishchenkoMihail-A10/src/TEST/packages.config
+3-AnishchenkoMihail-A10/src/TEST/TEST.vcxproj.user
+3-AnishchenkoMihail-A10/src/TEST/TEST.vcxproj
+*.config
