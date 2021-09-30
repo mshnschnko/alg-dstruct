@@ -99,7 +99,7 @@ void MenuArray(void)
 			break;
 		case 7:
 			system("cls");
-			printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Stack Array\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.FUCK GO BACK\n");
+			printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Stack Array\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.Back to main menu\n");
 			break;
 		case 0:
 			return;

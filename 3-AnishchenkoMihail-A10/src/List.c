@@ -63,7 +63,7 @@ void MenuList(void)
 	int num;
 	List_t* StackList = NULL;
 	Data_t PushEl;
-	printf("\t\tMENU\n\tplease choose the option:\n1.Init List Stack\n2.Destroy Stack List\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.FUCK GO BACK\n");
+	printf("\t\tMENU\n\tplease choose the option:\n1.Init List Stack\n2.Destroy Stack List\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.Back to main menu\n");
 	scanf_s("%i", &num);
 	while (num != 0)
 	{
