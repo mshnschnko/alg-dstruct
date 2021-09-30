@@ -51,6 +51,7 @@ TEST(StackListIsEmpty, StackListIsEmpty_TEST)
 	List_t* head = NULL;
 	EXPECT_EQ(1, StackListIsEmpty(head));
 	head = (List_t*)malloc(sizeof(List_t));
+	ASSERT_NE(nullptr, head);
 	head->ptr = NULL;
 	EXPECT_EQ(1, StackListIsEmpty(head));
 	List_el elem3 = { 3, NULL };
@@ -70,10 +71,7 @@ TEST(StackArrayPush, StackArrayPush_TEST)
 {
 	Array_t* StackArray = NULL;
 	StackArray = (Array_t*)malloc(sizeof(Array_t));
-	/*if (StackArray == NULL)
-	{
-		return NULL;
-	}*/
+	ASSERT_NE(nullptr, StackArray);
 	StackArray->data = NULL;
 	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
 	StackArray->size = 1;
@@ -94,11 +92,7 @@ TEST(StackArrayPop, StackArrayPop_TEST)
 {
 	Array_t* StackArray = NULL;
 	StackArray = (Array_t*)malloc(sizeof(Array_t));
-	/*if (StackArray == NULL)
-	{
-		return NULL;
-	}*/
-	//StackArray = malloc(sizeof(Array_t));
+	ASSERT_NE(nullptr, StackArray);
 	StackArray->data = NULL;
 	StackArray->data = (Data_t*)malloc(2 * sizeof(Data_t));
 	StackArray->size = 1;
@@ -118,11 +112,7 @@ TEST(StackArrayTop, StackArrayTop_TEST)
 {
 	Array_t* StackArray = NULL;
 	StackArray = (Array_t*)malloc(sizeof(Array_t));
-	/*if (StackArray == NULL)
-	{
-		return NULL;
-	}*/
-	//StackArray = malloc(sizeof(Array_t));
+	ASSERT_NE(nullptr, StackArray);
 	StackArray->data = NULL;
 	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
 	StackArray->size = 1;
@@ -137,11 +127,7 @@ TEST(StackArrayIsEmpty, StackArrayIsEmpty_TEST)
 	Array_t* StackArray = NULL;
 	EXPECT_TRUE(StackArrayIsEmpty(StackArray));
 	StackArray = (Array_t*)malloc(sizeof(Array_t));
-	/*if (StackArray == NULL)
-	{
-		return NULL;
-	}*/
-	//StackArray = malloc(sizeof(Array_t));
+	ASSERT_NE(nullptr, StackArray);
 	StackArray->data = NULL;
 	EXPECT_TRUE(StackArrayIsEmpty(StackArray));
 	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
