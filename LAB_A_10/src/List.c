@@ -3,7 +3,7 @@
 List_t* StackListInit(void)
 {
 	List_t* head = NULL;
-	head = malloc(sizeof(List_t));
+	head = (List_t*)malloc(sizeof(List_t));
 	if (head != NULL)
 		head->ptr = NULL;
 	else
@@ -42,7 +42,7 @@ void StackListPop(List_t* head)
 {
 	List_el* q = head->ptr;
 	head->ptr = q->next;
-	free(q);
+	//free(q);
 }
 
 List_el* StackListTop(List_t* head)

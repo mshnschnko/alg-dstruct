@@ -1,4 +1,7 @@
 #pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,3 +40,6 @@ void StackArrayPop(Array_t* Array);
 Data_t StackArrayTop(Array_t* Array);
 int StackArrayIsEmpty(Array_t* Array);
 void MenuArray(void);
+#ifdef __cplusplus
+}
+#endif

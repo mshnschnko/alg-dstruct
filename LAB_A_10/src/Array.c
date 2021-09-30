@@ -3,14 +3,14 @@
 Array_t* StackArrayInit(void)
 {
 	Array_t* StackArray = NULL;
-	StackArray = malloc(sizeof(Array_t)); // = NULL;
+	StackArray = (Array_t*)malloc(sizeof(Array_t)); // = NULL;
 	if (StackArray == NULL)
 	{
 		return NULL;
 	}
 	//StackArray = malloc(sizeof(Array_t));
 	StackArray->data = NULL;
-	StackArray->data = malloc(sizeof(Data_t));
+	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
 	StackArray->size = 1;
 	StackArray->top = 0;
 	return StackArray;
@@ -28,7 +28,7 @@ void StackArrayPush(Array_t* Array, Data_t Data)
 	else
 	{
 		Data_t* tmp = NULL;
-		tmp = (Data_t*)realloc(Array->data, (Array->size + 1) * sizeof(Data_t));
+		tmp = (Data_t*)realloc(Array->data, (++Array->size) * sizeof(Data_t));
 		if (tmp == NULL)
 		{
 			return;
@@ -53,7 +53,10 @@ Data_t StackArrayTop(Array_t* Array)
 
 int StackArrayIsEmpty(Array_t* Array)
 {
-	return 0;
+	if (Array == NULL || Array->data == NULL || Array->top == 0)
+		return 1;
+	else
+		return 0;
 }
 
 void MenuArray(void)
