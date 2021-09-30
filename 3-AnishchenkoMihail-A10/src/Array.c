@@ -64,7 +64,7 @@ void MenuArray(void)
 	int num;
 	Array_t* StackArray = NULL;
 	Data_t PushEl;
-	printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Array Stack\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.FUCK GO BACK\n");
+	printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Array Stack\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.Back to main menu\n");
 	scanf_s("%i", &num);
 	while (num != 0)
 	{
