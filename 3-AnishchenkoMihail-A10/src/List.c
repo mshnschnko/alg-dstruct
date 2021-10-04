@@ -83,7 +83,7 @@ void MenuList(void)
 		case 1:
 			StackList = StackListInit();
 			if (StackList != NULL)
-				printf("\List Stack is created\n");
+				printf("\nList Stack is created\n");
 			else
 				printf("MEMORY ALLOCATION ERROR");
 			break;
