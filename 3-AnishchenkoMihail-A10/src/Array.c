@@ -3,14 +3,13 @@
 Array_t* StackArrayInit(void)
 {
 	Array_t* StackArray = NULL;
-	StackArray = (Array_t*)malloc(sizeof(Array_t)); // = NULL;
+	StackArray = (Array_t*)malloc(sizeof(Array_t));
 	if (StackArray == NULL)
-	{
 		return NULL;
-	}
-	//StackArray = malloc(sizeof(Array_t));
 	StackArray->data = NULL;
 	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
+	if (StackArray->data == NULL)
+		return NULL;
 	StackArray->size = 1;
 	StackArray->top = 0;
 	return StackArray;
@@ -18,10 +17,11 @@ Array_t* StackArrayInit(void)
 
 void StackArrayDestroy(Array_t* Array)
 {
+	free(Array->data);
 	free(Array);
 }
 
-void StackArrayPush(Array_t* Array, Data_t Data)
+int StackArrayPush(Array_t* Array, Data_t Data)
 {
 	if (Array->top < Array->size)
 		Array->data[Array->top++] = Data;
@@ -30,30 +30,36 @@ void StackArrayPush(Array_t* Array, Data_t Data)
 		Data_t* tmp = NULL;
 		tmp = (Data_t*)realloc(Array->data, (++Array->size) * sizeof(Data_t));
 		if (tmp == NULL)
-		{
-			return;
-		}
+			return 0;
 		Array->data = tmp;
 		Array->data[Array->top++] = Data;
 	}
+	return 1;
 }
 
-void StackArrayPop(Array_t* Array)
+int StackArrayPop(Array_t* Array)
 {
-	//free(&(Array->data[Array->top - 1]));
-	Array->data[Array->top - 1] = 0;
-	//Array->size--;
-	Array->top--;
+	if (StackArrayIsEmpty(Array) == 0)
+	{
+		Array->data[Array->top - 1] = 0;
+		Array->top--;
+		return 1;
+	}
+	else
+		return 0;
 }
 
-Data_t StackArrayTop(Array_t* Array)
+Data_t* StackArrayTop(Array_t* Array)
 {
-	return Array->data[Array->top - 1];
+	if (StackArrayIsEmpty(Array) == 0)
+		return &(Array->data[Array->top - 1]);
+	else
+		return NULL;
 }
 
 int StackArrayIsEmpty(Array_t* Array)
 {
-	if (Array == NULL || Array->data == NULL || Array->top == 0)
+	if (Array == NULL || Array->top == 0)
 		return 1;
 	else
 		return 0;
@@ -64,6 +70,7 @@ void MenuArray(void)
 	int num;
 	Array_t* StackArray = NULL;
 	Data_t PushEl;
+	Data_t* top;
 	printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Array Stack\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.Back to main menu\n");
 	scanf_s("%i", &num);
 	while (num != 0)
@@ -72,7 +79,10 @@ void MenuArray(void)
 		{
 		case 1:
 			StackArray = StackArrayInit();
-			printf("\nArray Stack is created\n");
+			if (StackArray != NULL)
+				printf("\nArray Stack is created\n");
+			else
+				printf("MEMORY ALLOCATION ERROR");
 			break;
 		case 2:
 			StackArrayDestroy(StackArray);
@@ -81,15 +91,23 @@ void MenuArray(void)
 		case 3:
 			printf("\nEnter the data: ");
 			scanf_s("%i", &PushEl);
-			StackArrayPush(StackArray, PushEl);
-			printf("\nElement %i was added to the stack\n", PushEl);
+			if(StackArrayPush(StackArray, PushEl))
+				printf("\nElement %i was added to the stack\n", PushEl);
+			else
+				printf("MEMORY ALLOCATION ERROR");
 			break;
 		case 4:
-			StackArrayPop(StackArray);
-			printf("\nUpper element was deleted from the stack\n");
+			if (StackArrayPop(StackArray))
+				printf("\nUpper element was deleted from the stack\n");
+			else
+				printf("\nERROR: Stack is empty\n");
 			break;
 		case 5:
-			printf("\nDATA: %i\n", StackArrayTop(StackArray));
+			top = StackArrayTop(StackArray);
+			if (top != NULL)
+				printf("\nDATA: %i\n", *top);
+			else
+				printf("\nERROR: Stack is empty\n");
 			break;
 		case 6:
 			if (StackArrayIsEmpty(StackArray))

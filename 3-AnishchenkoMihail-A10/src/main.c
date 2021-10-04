@@ -11,7 +11,7 @@ void MemoryLeaks(void)
 int main(void)
 {
 	MemoryLeaks();
-	int num;
+	int num = 0;
 	printf("\t\tWhat do you want work with?\n1.List\n2.Array\n0.EXIT\n\n");
 	scanf_s("%i", &num);
 	while (num != 0)
@@ -36,8 +36,6 @@ int main(void)
 		printf("\t\tWhat do you want work with?\n1.List\n2.Array\n0.EXIT\n\n");
 		scanf_s("%i", &num);
 	}
-
-	//system("cls");
 	printf("\n\tGOODBYE!");
 	return 0;
 }
