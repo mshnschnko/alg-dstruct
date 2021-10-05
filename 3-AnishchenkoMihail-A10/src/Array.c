@@ -67,7 +67,7 @@ int StackArrayIsEmpty(Array_t* Array)
 
 void MenuArray(void)
 {
-	int num;
+	int num, DestroyFlag = 0;
 	Array_t* StackArray = NULL;
 	Data_t PushEl;
 	Data_t* top;
@@ -80,13 +80,17 @@ void MenuArray(void)
 		case 1:
 			StackArray = StackArrayInit();
 			if (StackArray != NULL)
+			{
 				printf("\nArray Stack is created\n");
+				DestroyFlag = 0;
+			}
 			else
 				printf("MEMORY ALLOCATION ERROR");
 			break;
 		case 2:
 			StackArrayDestroy(StackArray);
 			printf("\nArray Stack is destroyed\n");
+			DestroyFlag = 1;
 			break;
 		case 3:
 			printf("\nEnter the data: ");
@@ -128,4 +132,6 @@ void MenuArray(void)
 		}
 		scanf_s("%i", &num);
 	}
+	if (DestroyFlag == 0)
+		StackArrayDestroy(StackArray);
 }

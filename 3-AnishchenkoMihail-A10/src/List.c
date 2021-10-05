@@ -70,7 +70,7 @@ int StackListIsEmpty(List_t* head)
 
 void MenuList(void)
 {
-	int num;
+	int num, DestroyFlag = 0;
 	List_t* StackList = NULL;
 	Data_t PushEl;
 	Data_t* top;
@@ -83,13 +83,17 @@ void MenuList(void)
 		case 1:
 			StackList = StackListInit();
 			if (StackList != NULL)
+			{
 				printf("\nList Stack is created\n");
+				DestroyFlag = 0;
+			}
 			else
 				printf("MEMORY ALLOCATION ERROR");
 			break;
 		case 2:
 			StackListDestroy(StackList);
 			printf("\nList Stack is destroyed\n");
+			DestroyFlag = 1;
 			break;
 		case 3:
 			printf("\nEnter the data: ");
@@ -131,4 +135,6 @@ void MenuList(void)
 		}
 		scanf_s("%i", &num);
 	}
+	if (DestroyFlag == 0)
+		StackListDestroy(StackList);
 }

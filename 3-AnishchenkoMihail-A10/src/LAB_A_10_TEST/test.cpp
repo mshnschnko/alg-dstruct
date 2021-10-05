@@ -4,7 +4,8 @@
 TEST(StackListInit, StackListInit_TEST)
 {
 	List_t* head = StackListInit();
-	EXPECT_FALSE(head == nullptr);
+	EXPECT_NE(nullptr, head);
+	free(head);
 }
 
 TEST(StackListPush_BeginWithEmpty, StackListPush_TEST)
@@ -14,6 +15,7 @@ TEST(StackListPush_BeginWithEmpty, StackListPush_TEST)
 	EXPECT_EQ(1, StackListPush(&head, NewData));
 	EXPECT_EQ(1, head.ptr->Data);
 	EXPECT_EQ(nullptr, head.ptr->next);
+	free(head.ptr);
 }
 
 TEST(StackListPush_BeginWithElems, StackListPush_TEST)
@@ -26,7 +28,10 @@ TEST(StackListPush_BeginWithElems, StackListPush_TEST)
 	EXPECT_EQ(3, head.ptr->Data);
 	EXPECT_TRUE(head.ptr->next == &elem1);
 	EXPECT_TRUE(elem1.next == &elem2);
+	EXPECT_EQ(1, elem1.Data);
+	EXPECT_EQ(2, elem2.Data);
 	EXPECT_TRUE(elem2.next == NULL);
+	free(head.ptr);
 }
 
 TEST(StackListPop_StackWithoutElems, StackListPop_TEST)
@@ -91,24 +96,19 @@ TEST(StackArrayInit, StackArrayInit_TEST)
 {
 	Array_t* array = StackArrayInit();
 	EXPECT_NE(array, nullptr);
+	free(array->data);
+	free(array);
 }
 
 TEST(StackArrayPush_BeginWithEmpty, StackArrayPush_TEST)
 {
-	Array_t* StackArray = NULL;
-	StackArray = (Array_t*)malloc(sizeof(Array_t));
-	ASSERT_NE(nullptr, StackArray);
-	StackArray->data = NULL;
-	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
-	StackArray->size = 1;
-	StackArray->top = 0;
+	Data_t data[1];
+	Array_t StackArray = { data, 1, 0 };
 	Data_t NewData = 1;
-	EXPECT_EQ(1, StackArrayPush(StackArray, NewData));
-	EXPECT_EQ(1, StackArray->size);
-	EXPECT_EQ(1, StackArray->top);
-	EXPECT_EQ(1, StackArray->data[0]);
-	free(StackArray->data);
-	free(StackArray);
+	EXPECT_EQ(1, StackArrayPush(&StackArray, NewData));
+	EXPECT_EQ(1, StackArray.size);
+	EXPECT_EQ(1, StackArray.top);
+	EXPECT_EQ(1, StackArray.data[0]);
 }
 
 TEST(StackArrayPush_BeginWithElems, StackArrayPush_TEST)
@@ -143,6 +143,7 @@ TEST(StackArrayPop_Normal, StackArrayPop_TEST)
 	Array_t StackArray = { data, 2, 2 };
 	EXPECT_EQ(1, StackArrayPop(&StackArray));
 	EXPECT_EQ(0, StackArray.data[1]);
+	EXPECT_EQ(2, StackArray.size);
 	EXPECT_EQ(1, StackArray.top);
 }
 
