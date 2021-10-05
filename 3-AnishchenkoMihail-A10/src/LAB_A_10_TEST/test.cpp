@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Stack.h"
+#define _CRTDBG_MAP_ALLOC
+#define _CRT_SECURE_NO_WARNINGS
+#include <crtdbg.h>
 
 TEST(StackListInit, StackListInit_TEST)
 {
@@ -173,4 +176,11 @@ TEST(StackArrayIsEmpty_NotEmpty, StackArrayIsEmpty_TEST)
 	Data_t data[2] = { 1, 2 };
 	Array_t StackArray = { data, 2, 2 };
 	EXPECT_EQ(0, StackArrayIsEmpty(&StackArray));
+}
+
+TEST(MemoryLeaks, MemoryLeaks_TEST)
+{
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 }
