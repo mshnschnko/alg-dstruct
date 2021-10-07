@@ -31,7 +31,6 @@ int StackListPush(List_t* head, Data_t EntElem);
 int StackListPop(List_t* head);
 Data_t* StackListTop(List_t* head);
 int StackListIsEmpty(List_t* head);
-void MenuList(void);
 
 Array_t* StackArrayInit(void);
 void StackArrayDestroy(Array_t* Array);
@@ -39,7 +38,6 @@ int StackArrayPush(Array_t* Array, Data_t Data);
 int StackArrayPop(Array_t* Array);
 Data_t* StackArrayTop(Array_t* Array);
 int StackArrayIsEmpty(Array_t* Array);
-void MenuArray(void);
 #ifdef __cplusplus
 }
 #endif

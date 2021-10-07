@@ -1,8 +1,5 @@
 #include "pch.h"
 #include "Stack.h"
-#define _CRTDBG_MAP_ALLOC
-#define _CRT_SECURE_NO_WARNINGS
-#include <crtdbg.h>
 
 TEST(StackListInit, StackListInit_TEST)
 {
@@ -116,21 +113,16 @@ TEST(StackArrayPush_BeginWithEmpty, StackArrayPush_TEST)
 
 TEST(StackArrayPush_BeginWithElems, StackArrayPush_TEST)
 {
-	Array_t* StackArray = NULL;
-	StackArray = (Array_t*)malloc(sizeof(Array_t));
-	ASSERT_NE(nullptr, StackArray);
-	StackArray->data = NULL;
-	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
-	StackArray->size = 1;
-	StackArray->top = 1;
-	StackArray->data[0] = 1;
+	Data_t* data = (Data_t*)malloc(sizeof(Data_t));
+	ASSERT_NE(nullptr, data);
+	data[0] = 1;
+	Array_t StackArray = { data, 1, 1 };
 	Data_t NewData = 2;
-	EXPECT_EQ(1, StackArrayPush(StackArray, NewData));
-	EXPECT_EQ(2, StackArray->size);
-	EXPECT_EQ(2, StackArray->top);
-	EXPECT_EQ(2, StackArray->data[1]);
-	free(StackArray->data);
-	free(StackArray);
+	EXPECT_EQ(1, StackArrayPush(&StackArray, NewData));
+	EXPECT_EQ(2, StackArray.size);
+	EXPECT_EQ(2, StackArray.top);
+	EXPECT_EQ(2, StackArray.data[1]);
+	free(StackArray.data);
 }
 
 TEST(StackArrayPop_WithoutElems, StackArrayPop_TEST)
@@ -176,11 +168,4 @@ TEST(StackArrayIsEmpty_NotEmpty, StackArrayIsEmpty_TEST)
 	Data_t data[2] = { 1, 2 };
 	Array_t StackArray = { data, 2, 2 };
 	EXPECT_EQ(0, StackArrayIsEmpty(&StackArray));
-}
-
-TEST(MemoryLeaks, MemoryLeaks_TEST)
-{
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 }

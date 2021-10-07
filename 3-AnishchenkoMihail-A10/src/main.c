@@ -11,31 +11,5 @@ void MemoryLeaks(void)
 int main(void)
 {
 	MemoryLeaks();
-	int num = 0;
-	printf("\t\tWhat do you want work with?\n1.List\n2.Array\n0.EXIT\n\n");
-	scanf_s("%i", &num);
-	while (num != 0)
-	{
-		switch (num)
-		{
-		case 1:
-			system("cls");
-			MenuList();
-			break;
-		case 2:
-			system("cls");
-			MenuArray();
-			break;
-		case 0:
-			break;
-		default:
-			printf("\nplease choose the option again: ");
-			break;
-		}
-		system("cls");
-		printf("\t\tWhat do you want work with?\n1.List\n2.Array\n0.EXIT\n\n");
-		scanf_s("%i", &num);
-	}
-	printf("\n\tGOODBYE!");
 	return 0;
 }

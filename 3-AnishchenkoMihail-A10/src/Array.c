@@ -9,7 +9,10 @@ Array_t* StackArrayInit(void)
 	StackArray->data = NULL;
 	StackArray->data = (Data_t*)malloc(sizeof(Data_t));
 	if (StackArray->data == NULL)
+	{
+		free(StackArray);
 		return NULL;
+	}
 	StackArray->size = 1;
 	StackArray->top = 0;
 	return StackArray;
@@ -63,75 +66,4 @@ int StackArrayIsEmpty(Array_t* Array)
 		return 1;
 	else
 		return 0;
-}
-
-void MenuArray(void)
-{
-	int num, DestroyFlag = 0;
-	Array_t* StackArray = NULL;
-	Data_t PushEl;
-	Data_t* top;
-	printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Array Stack\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.Back to main menu\n");
-	scanf_s("%i", &num);
-	while (num != 0)
-	{
-		switch (num)
-		{
-		case 1:
-			StackArray = StackArrayInit();
-			if (StackArray != NULL)
-			{
-				printf("\nArray Stack is created\n");
-				DestroyFlag = 0;
-			}
-			else
-				printf("MEMORY ALLOCATION ERROR");
-			break;
-		case 2:
-			StackArrayDestroy(StackArray);
-			printf("\nArray Stack is destroyed\n");
-			DestroyFlag = 1;
-			break;
-		case 3:
-			printf("\nEnter the data: ");
-			scanf_s("%i", &PushEl);
-			if(StackArrayPush(StackArray, PushEl))
-				printf("\nElement %i was added to the stack\n", PushEl);
-			else
-				printf("MEMORY ALLOCATION ERROR");
-			break;
-		case 4:
-			if (StackArrayPop(StackArray))
-				printf("\nUpper element was deleted from the stack\n");
-			else
-				printf("\nERROR: Stack is empty\n");
-			break;
-		case 5:
-			top = StackArrayTop(StackArray);
-			if (top != NULL)
-				printf("\nDATA: %i\n", *top);
-			else
-				printf("\nERROR: Stack is empty\n");
-			break;
-		case 6:
-			if (StackArrayIsEmpty(StackArray))
-				printf("\nThe stack is Empty\n");
-			else
-				printf("\nThe stack contains any data\n");
-			break;
-		case 7:
-			system("cls");
-			printf("\t\tMENU\n\tplease choose the option:\n1.Init Array Stack\n2.Destroy Stack Array\n3.Push\n4.Pop\n5.Top\n6.Is Stack empty?\n7.Clear log\n\n0.Back to main menu\n");
-			break;
-		case 0:
-			return;
-			break;
-		default:
-			printf("\nplease choose the option again: ");
-			break;
-		}
-		scanf_s("%i", &num);
-	}
-	if (DestroyFlag == 0)
-		StackArrayDestroy(StackArray);
 }
