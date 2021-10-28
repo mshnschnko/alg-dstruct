@@ -70,11 +70,10 @@ int meminit(void* pMemory, int size)
 void memdone()
 {
 	void* CurrentBlock = pmemory;
-	int bytes = 0;
 	while ((char*)CurrentBlock < (char*)pmemory + blocksize)
 	{
-		if (*SecondSize(CurrentBlock) < 0)
-			fprintf(stderr, "MEMORY LEAK:\tBlock 0x%p; size: %i bytes.\n", CurrentBlock, abs(*SecondSize(CurrentBlock)));
+		if (*FirstSize(CurrentBlock) > 0)
+			fprintf(stderr, "MEMORY LEAK:\tBlock 0x%p; size: %i bytes.\n", CurrentBlock, abs(*FirstSize(CurrentBlock)));
 		CurrentBlock = (void*)((char*)CurrentBlock + abs(*FirstSize(CurrentBlock)));
 	}
 }
@@ -185,7 +184,7 @@ void* memalloc(int size)
 		}
 		else if (prev == NULL)
 		{
-			*NextBlock(prev) = NULL;
+			*PrevBlock(next) = NULL;
 			blockhead = next;
 		}
 		*FirstSize(siutable_block) = abs(*FirstSize(siutable_block));
@@ -195,7 +194,7 @@ void* memalloc(int size)
 	//*SecondSize(siutable_block) = *FirstSize(siutable_block);
 	*NextBlock(siutable_block) = NULL;
 	*PrevBlock(siutable_block) = NULL;
-	fprintf(stderr, "%i\n", *FirstSize(siutable_block));
+	//fprintf(stderr, "%i\n", *FirstSize(siutable_block));
 	return (void*)((char*)siutable_block + memgetminimumsize() - sizeof(int));
 }
 
@@ -220,7 +219,7 @@ void memfree(void* p)
 	if (prev != NULL)
 		if (*FirstSize(prev) < 0)
 		{
-			*FirstSize(prev) = *FirstSize(prev) - *FirstSize(head); //both numbers are negative, so we subtract one from the other
+			*FirstSize(prev) = *FirstSize(prev) + *FirstSize(head); //both numbers are negative, so we subtract one from the other
 			*SecondSize(prev) = *FirstSize(prev);
 			head = prev;
 			merged_with_left = TRUE;
@@ -241,11 +240,23 @@ void memfree(void* p)
 				*PrevBlock(*NextBlock(next)) = *PrevBlock(next);
 			if (blockhead == next)
 				blockhead = *NextBlock(blockhead);
-			*FirstSize(head) = *FirstSize(head) - *FirstSize(next);
+			if (blocktail == next)
+				blocktail = *PrevBlock(blocktail);
+			/*if (*PrevBlock(next) != NULL)
+			{
+				*NextBlock(*PrevBlock(next)) = *NextBlock(next);
+				blockhead = *NextBlock(blockhead);
+			}
+			if (*NextBlock(next) != NULL)
+			{
+				*PrevBlock(*NextBlock(next)) = *PrevBlock(next);
+				blocktail = *PrevBlock(blocktail);
+			}*/
+			*FirstSize(head) = *FirstSize(head) + *FirstSize(next);
 			*SecondSize(head) = *FirstSize(head);
 			merged_with_right = TRUE;
 		}
-	if (!merged_with_left && !merged_with_right) /////????????????
+	if (merged_with_left == FALSE && merged_with_right == FALSE) /////????????????
 	{
 		*NextBlock(head) = blockhead;
 		if (blockhead != NULL)
@@ -253,8 +264,10 @@ void memfree(void* p)
 		*PrevBlock(head) = NULL;
 		blockhead = head;
 	}
-	void* start = blockhead;
+	if (blocktail == NULL)
+		blocktail = head;
+	/*void* start = blockhead;
 	while (*NextBlock(start) != NULL)
 		start = *NextBlock(start);
-	blocktail = start;
+	blocktail = start;*/
 }

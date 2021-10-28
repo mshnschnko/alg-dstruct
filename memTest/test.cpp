@@ -131,7 +131,7 @@ TEST(memalloc_Test, memalloc_memallocAllInitMemoryNextMemallocFail_expectSecondM
 	free(ptr);
 }*/
 
-TEST(memalloc_Test, memalloc_memallocInitTextBlockAndCharBlock_expectNoBlocksCorrupted) {
+/*TEST(memalloc_Test, memalloc_memallocInitTextBlockAndCharBlock_expectNoBlocksCorrupted) {
 	const int TEST_MEMORY_SIZE_INIT = memgetminimumsize() + TEST_MEMORY_TEXT_BLOCK_SIZE + memgetblocksize() + sizeof(char);
 	const char sometext[TEST_MEMORY_TEXT_BLOCK_SIZE] = "abccbbfff";
 	const char b = 'b';
@@ -166,9 +166,9 @@ TEST(memalloc_Test, memalloc_memallocInitTextBlockAndCharBlock_expectNoBlocksCor
 	EXPECT_TRUE(!strcmp(a_text, sometext));
 	EXPECT_EQ(*b_char, b);
 	free(ptr);
-}
+}*/
 
-TEST(memfree_Test, memfree_memfreeFreeOneBlock_expectSizeIsPositive) {
+/*TEST(memfree_Test, memfree_memfreeFreeOneBlock_expectSizeIsPositive) {
 	const int TEST_MEMORY_SIZE_INIT = memgetminimumsize() + sizeof(char);
 	void* ptr = malloc(TEST_MEMORY_SIZE_INIT);
 	ASSERT_TRUE(ptr);
@@ -192,5 +192,235 @@ TEST(memfree_Test, memfree_memfreeFreeOneBlock_expectSizeIsPositive) {
 	EXPECT_TRUE(*FirstSize(all_init_memory_block_desc) < 0);
 	EXPECT_EQ(blockhead, ptr);
 	EXPECT_EQ(blocktail, ptr);
+	free(ptr);
+}*/
+
+/*TEST(memfree_Test, memfree_memfreeFreeBlockWhereRightBlockIsFree_expectBlocksMerged) {
+	const int TEST_MEMORY_SIZE_INIT = memgetminimumsize() + memgetblocksize() + 2 * sizeof(char);
+	void* ptr = malloc(TEST_MEMORY_SIZE_INIT);
+	ASSERT_TRUE(ptr);
+	int bytes_init = meminit(ptr, TEST_MEMORY_SIZE_INIT);
+	if (!bytes_init) {
+		free(ptr);
+		ASSERT_TRUE(bytes_init);
+	}
+	// first block is allocated
+	void* allocated_char_block_desc = ptr;
+	*FirstSize(allocated_char_block_desc) = (int)(sizeof(char) + memgetblocksize());
+	*NextBlock(allocated_char_block_desc) = NULL;
+	*PrevBlock(allocated_char_block_desc) = NULL;
+	//*isFree(allocated_char_block_desc) = 0;
+	*SecondSize(allocated_char_block_desc) = *FirstSize(allocated_char_block_desc);
+	// second block is free
+	void* free_char_block_desc = (void*)((char*)allocated_char_block_desc + abs(*FirstSize(allocated_char_block_desc)));
+	blockhead = free_char_block_desc;
+	blocktail = free_char_block_desc;
+	*FirstSize(free_char_block_desc) = -((int)(sizeof(char) + memgetblocksize()));
+	*NextBlock(free_char_block_desc) = NULL;
+	*PrevBlock(free_char_block_desc) = NULL;
+	//*isFree(free_char_block_desc) = 1;
+	*SecondSize(free_char_block_desc) = *FirstSize(free_char_block_desc);
+	// now freeing and expect memory state similar to state after meminit
+	void* user_ptr_to_allocated_block = (void*)((char*)allocated_char_block_desc + sizeof(int) + 2 * sizeof(void*));
+	memfree(user_ptr_to_allocated_block);
+	EXPECT_EQ(*FirstSize(allocated_char_block_desc), -blocksize);
+	EXPECT_EQ(*SecondSize(allocated_char_block_desc), -blocksize);
+	EXPECT_EQ(blockhead, ptr);
+	EXPECT_EQ(blocktail, ptr);
+	free(ptr);
+}*/
+
+/*TEST(memfree_Test, memfree_memfreeFreeBlockWhereLeftBlockIsFree_expectBlocksMerged) {
+	const int TEST_MEMORY_SIZE_INIT = memgetminimumsize() + memgetblocksize() + 2 * sizeof(char);
+	void* ptr = malloc(TEST_MEMORY_SIZE_INIT);
+	ASSERT_TRUE(ptr);
+	int bytes_init = meminit(ptr, TEST_MEMORY_SIZE_INIT);
+	if (!bytes_init) {
+		free(ptr);
+		ASSERT_TRUE(bytes_init);
+	}
+	// first block is free
+	void* free_char_block_desc = (void*)ptr;
+	blockhead = free_char_block_desc;
+	*FirstSize(free_char_block_desc) = -((int)sizeof(char) + memgetblocksize());
+	*NextBlock(free_char_block_desc) = NULL;
+	*PrevBlock(free_char_block_desc) = NULL;
+	//*isFree(free_char_block_desc) = 1;
+	*SecondSize(free_char_block_desc) = *FirstSize(free_char_block_desc);
+	// second block is allocated
+	void* allocated_char_block_desc = (void*)((char*)free_char_block_desc + abs(*FirstSize(free_char_block_desc)));
+	*FirstSize(allocated_char_block_desc) = (int)sizeof(char) + memgetblocksize(); // block is allocated so size is negative
+	*NextBlock(allocated_char_block_desc) = NULL;
+	*PrevBlock(allocated_char_block_desc) = NULL;
+	//*isFree(allocated_char_block_desc) = 0;
+	*SecondSize(allocated_char_block_desc) = *FirstSize(allocated_char_block_desc);
+	// now freeing and expect memory state similar with state after meminit
+	void* user_ptr_to_allocated_block = (void*)((char*)allocated_char_block_desc + sizeof(int) + 2 * sizeof(int*));
+	memfree(user_ptr_to_allocated_block);
+	EXPECT_EQ(*FirstSize(free_char_block_desc), -blocksize);
+	EXPECT_EQ(*SecondSize(free_char_block_desc), -blocksize);
+	EXPECT_EQ(blockhead, ptr);
+	EXPECT_EQ(blocktail, ptr);
+	free(ptr);
+}*/
+
+/*TEST(memfree_Test, memfree_memfreeFreeBlockBetweenTwoFreeBlocks_expectBlocksMerged) {
+	const int TEST_MEMORY_SIZE_INIT = memgetminimumsize() + 2 * memgetblocksize() + 3 * sizeof(char);
+	void* ptr = malloc(TEST_MEMORY_SIZE_INIT);
+	ASSERT_TRUE(ptr);
+	int bytes_init = meminit(ptr, TEST_MEMORY_SIZE_INIT);
+	if (!bytes_init) {
+		free(ptr);
+		ASSERT_TRUE(bytes_init);
+	}
+	// first block is free
+	void* first_free_char_block_desc = ptr;
+	blockhead = first_free_char_block_desc;
+	*FirstSize(first_free_char_block_desc) = -((int)sizeof(char) + memgetblocksize());
+	*NextBlock(first_free_char_block_desc) = NULL;
+	*PrevBlock(first_free_char_block_desc) = NULL;
+	//*isFree(first_free_char_block_desc) = 1;
+	*SecondSize(first_free_char_block_desc) = *FirstSize(first_free_char_block_desc);
+	// second block is allocated
+	void* allocated_char_block_desc = (void*)((char*)first_free_char_block_desc + abs(*FirstSize(first_free_char_block_desc)));
+	*FirstSize(allocated_char_block_desc) = (int)sizeof(char) + memgetblocksize();
+	*NextBlock(allocated_char_block_desc) = NULL;
+	*PrevBlock(allocated_char_block_desc) = NULL;
+	//*isFree(allocated_char_block_desc) = 0;
+	*SecondSize(allocated_char_block_desc) = *FirstSize(allocated_char_block_desc);
+	// third block is free
+	void* third_free_char_block_desc = (void*)((char*)allocated_char_block_desc + *FirstSize(allocated_char_block_desc));
+	*FirstSize(third_free_char_block_desc) = -((int)sizeof(char) + memgetblocksize());
+	*NextBlock(third_free_char_block_desc) = NULL;
+	*PrevBlock(third_free_char_block_desc) = first_free_char_block_desc;
+	//*isFree(third_free_char_block_desc) = 1;
+	*SecondSize(third_free_char_block_desc) = *FirstSize(third_free_char_block_desc);
+	*NextBlock(first_free_char_block_desc) = third_free_char_block_desc;
+	// now freeing and expect memory state similar with state after meminit
+	void* user_ptr_to_allocated_block = (void*)((char*)allocated_char_block_desc + sizeof(int) + 2 * sizeof(int*));
+	memfree(user_ptr_to_allocated_block);
+	EXPECT_EQ(*FirstSize(first_free_char_block_desc), -blocksize);
+	EXPECT_EQ(*SecondSize(first_free_char_block_desc), -blocksize);
+	EXPECT_EQ(*NextBlock(first_free_char_block_desc), (void*)NULL);
+	EXPECT_EQ(*PrevBlock(first_free_char_block_desc), (void*)NULL);
+	EXPECT_EQ(blockhead, ptr);
+	EXPECT_EQ(blocktail, ptr);
+	free(ptr);
+}*/
+
+/*TEST(memalloc_FuncTest, memalloc_listptrSizeLessThenAskedToMalloc_expectRightBlock) {
+	const int TEST_MEMORY_SIZE_INIT = 3 * memgetblocksize() + 1 + 5 + 5;
+	void* ptr = malloc(TEST_MEMORY_SIZE_INIT);
+	ASSERT_TRUE(ptr);
+	int bytes_init = meminit(ptr, TEST_MEMORY_SIZE_INIT);
+	if (!bytes_init) {
+		free(ptr);
+		ASSERT_TRUE(bytes_init);
+	}
+	char* a = (char*)memalloc(5);
+	char* b = (char*)memalloc(5);
+	char* c = (char*)memalloc(1);
+	EXPECT_TRUE(a);
+	EXPECT_TRUE(b);
+	EXPECT_TRUE(c);
+	memfree(a);
+	memfree(c);
+	char* d = (char*)memalloc(5); // here we could get 1-byte block with memalloc error
+	c = (char*)memalloc(1);
+	EXPECT_TRUE(d);
+	EXPECT_TRUE(c);
+	EXPECT_TRUE(d == a);
+	memfree(d);
+	memfree(b);
+	memfree(c);
+	EXPECT_EQ(*FirstSize(ptr), -blocksize);
+	EXPECT_EQ(*SecondSize(ptr), -blocksize);
+	EXPECT_EQ(blockhead, ptr);
+	EXPECT_EQ(blocktail, ptr);
+	memdone();
+	free(ptr);
+}*/
+
+#define TEST_BLOCKS_COUNT 10
+
+/*TEST(memallocator_StressTest, memalloc_manyBlocksAllocAndFree_expectMemoryStateSimilarToAfterInit) {
+	const int TEST_BLOCK_SIZE = 16;
+	const int TEST_MEMORY_SIZE = TEST_BLOCKS_COUNT * TEST_BLOCK_SIZE;
+	const int TEST_MEMORY_SIZE_INIT = TEST_BLOCKS_COUNT * (TEST_BLOCK_SIZE + memgetblocksize());
+	void* ptr = malloc(TEST_MEMORY_SIZE_INIT);
+	ASSERT_TRUE(ptr);
+	int bytes_init = meminit(ptr, TEST_MEMORY_SIZE_INIT);
+	if (!bytes_init) {
+		free(ptr);
+		ASSERT_TRUE(bytes_init);
+	}
+	void** blocks = (void**)malloc(TEST_BLOCKS_COUNT * sizeof(void*));
+	if (!blocks) {
+		free(ptr);
+		ASSERT_TRUE(blocks);
+	}
+	for (int i = 0; i < TEST_BLOCKS_COUNT; i++) {
+		blocks[i] = (char*)memalloc(TEST_BLOCK_SIZE);
+	}
+	for (int i = 0; 2 * i < TEST_BLOCKS_COUNT; i++) {
+		memfree(blocks[2 * i]);
+	}
+	for (int i = 0; 2 * i < TEST_BLOCKS_COUNT; i++) {
+		blocks[2 * i] = (char*)memalloc(TEST_BLOCK_SIZE);
+	}
+	for (int i = 0; 2 * i + 1 < TEST_BLOCKS_COUNT; i++) {
+		memfree(blocks[2 * i + 1]);
+	}
+	for (int i = 0; 2 * i < TEST_BLOCKS_COUNT; i++) {
+		memfree(blocks[2 * i]);
+	}
+	EXPECT_EQ(*FirstSize(ptr), -blocksize);
+	EXPECT_EQ(*SecondSize(ptr), -blocksize);
+	EXPECT_EQ(*NextBlock(ptr), (void*)NULL);
+	EXPECT_EQ(*PrevBlock(ptr), (void*)NULL);
+	//EXPECT_EQ(*isFree((int*)ptr), 1);
+	memdone();
+	free(blocks);
+	free(ptr);
+}*/
+
+TEST(memallocator_StressTest, memalloc_manyRandomBlocksAllocAndFree_expectMemoryStateSimilarToAfterInit) {
+	const int TEST_BLOCK_SIZE = 16;
+	const int TEST_MEMORY_SIZE = TEST_BLOCKS_COUNT * TEST_BLOCK_SIZE;
+	const int TEST_MEMORY_SIZE_INIT = 2 * TEST_BLOCKS_COUNT * (TEST_BLOCK_SIZE + memgetblocksize()); //multiplied by 2 so fragmentation will not fail the test
+	void* ptr = malloc(TEST_MEMORY_SIZE_INIT);
+	ASSERT_TRUE(ptr);
+	int bytes_init = meminit(ptr, TEST_MEMORY_SIZE_INIT);
+	if (!bytes_init) {
+		free(ptr);
+		ASSERT_TRUE(bytes_init);
+	}
+	void** blocks = (void**)malloc(TEST_BLOCKS_COUNT * sizeof(void*));
+	if (!blocks) {
+		free(ptr);
+		ASSERT_TRUE(blocks);
+	}
+	for (int i = 0; i < TEST_BLOCKS_COUNT; i++) {
+		blocks[i] = (char*)memalloc(rand() % TEST_BLOCK_SIZE + 1);
+	}
+	for (int i = 0; 2 * i < TEST_BLOCKS_COUNT; i++) {
+		memfree(blocks[2 * i]);
+	}
+	for (int i = 0; 2 * i < TEST_BLOCKS_COUNT; i++) {
+		blocks[2 * i] = (char*)memalloc(TEST_BLOCK_SIZE);
+	}
+	for (int i = 0; 2 * i + 1 < TEST_BLOCKS_COUNT; i++) {
+		memfree(blocks[2 * i + 1]);
+	}
+	for (int i = 0; 2 * i < TEST_BLOCKS_COUNT; i++) {
+		memfree(blocks[2 * i]);
+	}
+	EXPECT_EQ(*FirstSize(ptr), blocksize);
+	EXPECT_EQ(*SecondSize(ptr), blocksize);
+	EXPECT_EQ(*NextBlock(ptr), (void*)NULL);
+	EXPECT_EQ(*PrevBlock(ptr), (void*)NULL);
+	//EXPECT_EQ(*isFree((int*)ptr), 1);
+	memdone();
+	free(blocks);
 	free(ptr);
 }

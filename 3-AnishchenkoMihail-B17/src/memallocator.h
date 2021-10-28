@@ -58,6 +58,7 @@ extern "C" {
 
 	extern void* blockhead;
 	extern void* blocktail;
+	extern int blocksize;
 
 #ifdef __cplusplus
 }
