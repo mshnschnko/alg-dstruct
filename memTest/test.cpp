@@ -2,7 +2,7 @@
 #include "memallocator.h"
 #include <string.h>
 #define TEST_MEMORY_BLOCK_SIZE 10
-#define TEST_BLOCKS_COUNT 10
+#define TEST_BLOCKS_COUNT 100
 
 TEST(memgetminimumsize, min_size_expected16)
 {
@@ -401,8 +401,8 @@ TEST(memallocator_StressTest, memalloc_manyRandomBlocksAllocAndFree_expectMemory
 		memfree(blocks[2 * i + 1]);
 	for (int i = 0; 2 * i < TEST_BLOCKS_COUNT; i++)
 		memfree(blocks[2 * i]);
-	EXPECT_EQ(*FirstSize(ptr), blocksize);
-	EXPECT_EQ(*SecondSize(ptr), blocksize);
+	EXPECT_EQ(*FirstSize(ptr), -blocksize);
+	EXPECT_EQ(*SecondSize(ptr), -blocksize);
 	EXPECT_EQ(*NextBlock(ptr), nullptr);
 	EXPECT_EQ(*PrevBlock(ptr), nullptr);
 	memdone();

@@ -13,7 +13,7 @@
 #define FORWARD 1
 #define BACK 0
 
-#define DESC_SIZE (2 * sizeof(int) + 2 * sizeof(int*))
+#define DESC_SIZE (2 * sizeof(int) + 2 * sizeof(void*))
 
 void* blockhead;
 void* blocktail;
@@ -208,11 +208,11 @@ void memfree(void* p)
 	*FirstSize(head) = -(abs(*FirstSize(head)));
 	*SecondSize(head) = *FirstSize(head);
 	void* next = NULL;
-	if ((int*)((char*)head + abs(*FirstSize(head))) < (int*)((char*)pmemory + blocksize))
+	if (((char*)head + abs(*FirstSize(head))) < ((char*)pmemory + blocksize))
 		next = (void*)((char*)head + abs(*FirstSize(head)));
 	void* prev = NULL;
 	if ((int*)((char*)head - 1) > (int*)pmemory)
-		prev = (void*)((char*)head - abs(*((char*)head - sizeof(int))));
+		prev = (void*)((char*)head - abs(*((int*)head - 1)));
 	if (prev != NULL)
 		if (*FirstSize(prev) < 0)
 		{
