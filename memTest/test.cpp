@@ -419,7 +419,6 @@ TEST(memallocator_StressTest, memalloc_manyRandomBlocksAllocAndFree_expectMemory
 	EXPECT_EQ(*SecondSize(ptr), blocksize);
 	EXPECT_EQ(*NextBlock(ptr), (void*)NULL);
 	EXPECT_EQ(*PrevBlock(ptr), (void*)NULL);
-	//EXPECT_EQ(*isFree((int*)ptr), 1);
 	memdone();
 	free(blocks);
 	free(ptr);
