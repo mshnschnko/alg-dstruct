@@ -1,0 +1,17 @@
+**Debug
+\Debug
+**Release
+**.vs
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+googletest
+pch.h
+pch.cpp
+**.config
+**.xml
+\packages
+**.tlog
+**.pch
+*.log
