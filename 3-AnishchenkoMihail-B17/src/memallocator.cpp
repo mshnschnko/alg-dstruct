@@ -13,7 +13,7 @@
 #define FORWARD 1
 #define BACK 0
 
-#define DESC_SIZE (2 * sizeof(int) + 2 * sizeof(int*)) // descriptor size
+#define DESC_SIZE (2 * sizeof(int) + 2 * sizeof(int*))
 
 void* blockhead;
 void* blocktail;
@@ -190,11 +190,8 @@ void* memalloc(int size)
 		*FirstSize(siutable_block) = abs(*FirstSize(siutable_block));
 		*SecondSize(siutable_block) = *FirstSize(siutable_block);
 	}
-	//*FirstSize(siutable_block) = -(*FirstSize(siutable_block));
-	//*SecondSize(siutable_block) = *FirstSize(siutable_block);
 	*NextBlock(siutable_block) = NULL;
 	*PrevBlock(siutable_block) = NULL;
-	//fprintf(stderr, "%i\n", *FirstSize(siutable_block));
 	return (void*)((char*)siutable_block + memgetminimumsize() - sizeof(int));
 }
 
@@ -219,7 +216,7 @@ void memfree(void* p)
 	if (prev != NULL)
 		if (*FirstSize(prev) < 0)
 		{
-			*FirstSize(prev) = *FirstSize(prev) + *FirstSize(head); //both numbers are negative, so we subtract one from the other
+			*FirstSize(prev) = *FirstSize(prev) + *FirstSize(head); //both numbers are negative, so we sum one from the other
 			*SecondSize(prev) = *FirstSize(prev);
 			head = prev;
 			merged_with_left = TRUE;
@@ -242,21 +239,11 @@ void memfree(void* p)
 				blockhead = *NextBlock(blockhead);
 			if (blocktail == next)
 				blocktail = *PrevBlock(blocktail);
-			/*if (*PrevBlock(next) != NULL)
-			{
-				*NextBlock(*PrevBlock(next)) = *NextBlock(next);
-				blockhead = *NextBlock(blockhead);
-			}
-			if (*NextBlock(next) != NULL)
-			{
-				*PrevBlock(*NextBlock(next)) = *PrevBlock(next);
-				blocktail = *PrevBlock(blocktail);
-			}*/
 			*FirstSize(head) = *FirstSize(head) + *FirstSize(next);
 			*SecondSize(head) = *FirstSize(head);
 			merged_with_right = TRUE;
 		}
-	if (merged_with_left == FALSE && merged_with_right == FALSE) /////????????????
+	if (merged_with_left == FALSE && merged_with_right == FALSE)
 	{
 		*NextBlock(head) = blockhead;
 		if (blockhead != NULL)
@@ -266,8 +253,4 @@ void memfree(void* p)
 	}
 	if (blocktail == NULL)
 		blocktail = head;
-	/*void* start = blockhead;
-	while (*NextBlock(start) != NULL)
-		start = *NextBlock(start);
-	blocktail = start;*/
 }
