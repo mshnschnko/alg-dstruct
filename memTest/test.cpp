@@ -2,7 +2,7 @@
 #include "memallocator.h"
 #include <string.h>
 #define TEST_MEMORY_BLOCK_SIZE 10
-#define TEST_BLOCKS_COUNT 100
+#define TEST_BLOCKS_COUNT 10000
 
 TEST(memgetminimumsize, min_size_expected16)
 {

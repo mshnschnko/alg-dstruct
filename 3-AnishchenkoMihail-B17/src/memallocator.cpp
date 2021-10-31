@@ -69,12 +69,12 @@ int meminit(void* pMemory, int size)
 
 void memdone()
 {
-	void* CurrentBlock = pmemory;
-	while ((char*)CurrentBlock < (char*)pmemory + blocksize)
+	void* currentblock = pmemory;
+	while ((char*)currentblock < (char*)pmemory + blocksize)
 	{
-		if (*FirstSize(CurrentBlock) > 0)
-			fprintf(stderr, "MEMORY LEAK:\tBlock 0x%p; size: %i bytes.\n", CurrentBlock, abs(*FirstSize(CurrentBlock)));
-		CurrentBlock = (void*)((char*)CurrentBlock + abs(*FirstSize(CurrentBlock)));
+		if (*FirstSize(currentblock) > 0)
+			fprintf(stderr, "MEMORY LEAK:\tBlock 0x%p; size: %i bytes.\n", currentblock, abs(*FirstSize(currentblock)));
+		currentblock = (void*)((char*)currentblock + abs(*FirstSize(currentblock)));
 	}
 }
 
@@ -82,7 +82,7 @@ void* Forward(void* head, int size)
 {
 	if (head == NULL)
 		return NULL;
-	while (abs(*FirstSize(head)) < size + memgetminimumsize())
+	while (abs(*FirstSize(head)) < size + memgetblocksize())
 	{
 		if (*NextBlock(head) == NULL)
 		{
@@ -98,7 +98,7 @@ void* Back(void* tail, int size)
 {
 	if (tail == NULL)
 		return NULL;
-	while (abs(*FirstSize(tail)) < size + memgetminimumsize())
+	while (abs(*FirstSize(tail)) < size + memgetblocksize())
 	{
 		if (*PrevBlock(tail) == NULL)
 		{
@@ -114,64 +114,64 @@ void* memalloc(int size)
 {
 	int movehead = FALSE;
 	int movetail = FALSE;
-	if (size <= 0 || size > blocksize - memgetminimumsize())
+	if (size <= 0 || size > blocksize - memgetblocksize())
 	{
 		fprintf(stderr, "MEMORY ALLOCATION ERROR:\tincorrect size of allocated memory.\n");
 		return NULL;
 	}
-	void* siutable_block = NULL;
+	void* siutableblock = NULL;
 	if (direction == FORWARD)
 	{
-		siutable_block = blockhead;
-		if (siutable_block == NULL)
+		siutableblock = blockhead;
+		if (siutableblock == NULL)
 			return NULL;
-		siutable_block = Forward(siutable_block, size);
-		if (siutable_block == NULL)
+		siutableblock = Forward(siutableblock, size);
+		if (siutableblock == NULL)
 			return NULL;
-		if (siutable_block == blockhead)
+		if (siutableblock == blockhead)
 			movehead = TRUE;
 		direction = BACK;
 	}
 	else if (direction == BACK)
 	{
-		siutable_block = blocktail;
-		if (siutable_block == NULL)
+		siutableblock = blocktail;
+		if (siutableblock == NULL)
 			return NULL;
-		siutable_block = Back(siutable_block, size);
-		if (siutable_block == NULL)
+		siutableblock = Back(siutableblock, size);
+		if (siutableblock == NULL)
 			return NULL;
-		if (siutable_block == blocktail)
+		if (siutableblock == blocktail)
 			movetail = TRUE;
 		direction = FORWARD;
 	}
-	if (abs(*FirstSize(siutable_block)) > size + 2 * memgetminimumsize()) //then this block can be divided into two and the second one can be used in the future
+	if (abs(*FirstSize(siutableblock)) > size + 2 * memgetblocksize()) //then this block can be divided into two and the second one can be used in the future
 	{
-		void* newblock = (void*)((char*)siutable_block + memgetminimumsize() + size);
-		*NextBlock(newblock) = *NextBlock(siutable_block);
-		*PrevBlock(newblock) = *PrevBlock(siutable_block);
-		*FirstSize(newblock) = -(abs(*FirstSize(siutable_block)) - memgetminimumsize() - size);
+		void* newblock = (void*)((char*)siutableblock + memgetblocksize() + size);
+		*NextBlock(newblock) = *NextBlock(siutableblock);
+		*PrevBlock(newblock) = *PrevBlock(siutableblock);
+		*FirstSize(newblock) = -(abs(*FirstSize(siutableblock)) - memgetblocksize() - size);
 		*SecondSize(newblock) = *FirstSize(newblock);
-		if (*NextBlock(siutable_block) != NULL)
+		if (*NextBlock(siutableblock) != NULL)
 		{
-			void* next = *NextBlock(siutable_block);
+			void* next = *NextBlock(siutableblock);
 			*PrevBlock(next) = newblock;
 		}
 		else
 			blocktail = newblock;
-		if (*PrevBlock(siutable_block) != NULL)
+		if (*PrevBlock(siutableblock) != NULL)
 		{
-			void* prev = *PrevBlock(siutable_block);
+			void* prev = *PrevBlock(siutableblock);
 			*NextBlock(prev) = newblock;
 		}
 		else
 			blockhead = newblock;
-		*FirstSize(siutable_block) = size + memgetminimumsize();
-		*SecondSize(siutable_block) = *FirstSize(siutable_block);
+		*FirstSize(siutableblock) = size + memgetblocksize();
+		*SecondSize(siutableblock) = *FirstSize(siutableblock);
 	}
 	else
 	{
-		void* next = *NextBlock(siutable_block);
-		void* prev = *PrevBlock(siutable_block);
+		void* next = *NextBlock(siutableblock);
+		void* prev = *PrevBlock(siutableblock);
 		if (next == NULL && prev == NULL)
 		{
 			blockhead = NULL;
@@ -187,12 +187,17 @@ void* memalloc(int size)
 			*PrevBlock(next) = NULL;
 			blockhead = next;
 		}
-		*FirstSize(siutable_block) = abs(*FirstSize(siutable_block));
-		*SecondSize(siutable_block) = *FirstSize(siutable_block);
+		else
+		{
+			*NextBlock(prev) = next;
+			*PrevBlock(next) = prev;
+		}
+		*FirstSize(siutableblock) = abs(*FirstSize(siutableblock));
+		*SecondSize(siutableblock) = *FirstSize(siutableblock);
 	}
-	*NextBlock(siutable_block) = NULL;
-	*PrevBlock(siutable_block) = NULL;
-	return (void*)((char*)siutable_block + memgetminimumsize() - sizeof(int));
+	*NextBlock(siutableblock) = NULL;
+	*PrevBlock(siutableblock) = NULL;
+	return (void*)((char*)siutableblock + memgetblocksize() - sizeof(int));
 }
 
 void memfree(void* p)
@@ -202,9 +207,9 @@ void memfree(void* p)
 		fprintf(stderr, "MEMORY FREE ERROR:\tthis pointer is nullptr\n");
 		return;
 	}
-	int merged_with_left = FALSE;
-	int merged_with_right = FALSE;
-	void* head = (void*)((char*)p - memgetminimumsize() + sizeof(int));
+	int mergedwithleft = FALSE;
+	int mergedwithright = FALSE;
+	void* head = (void*)((char*)p - memgetblocksize() + sizeof(int));
 	*FirstSize(head) = -(abs(*FirstSize(head)));
 	*SecondSize(head) = *FirstSize(head);
 	void* next = NULL;
@@ -219,12 +224,12 @@ void memfree(void* p)
 			*FirstSize(prev) = *FirstSize(prev) + *FirstSize(head); //both numbers are negative, so we sum one from the other
 			*SecondSize(prev) = *FirstSize(prev);
 			head = prev;
-			merged_with_left = TRUE;
+			mergedwithleft = TRUE;
 		}
 	if (next != NULL)
 		if (*FirstSize(next) < 0)
 		{
-			if (merged_with_left == FALSE)
+			if (mergedwithleft == FALSE)
 			{
 				*NextBlock(head) = blockhead;
 				*PrevBlock(blockhead) = head;
@@ -241,9 +246,9 @@ void memfree(void* p)
 				blocktail = *PrevBlock(blocktail);
 			*FirstSize(head) = *FirstSize(head) + *FirstSize(next);
 			*SecondSize(head) = *FirstSize(head);
-			merged_with_right = TRUE;
+			mergedwithright = TRUE;
 		}
-	if (merged_with_left == FALSE && merged_with_right == FALSE)
+	if (mergedwithleft == FALSE && mergedwithright == FALSE)
 	{
 		*NextBlock(head) = blockhead;
 		if (blockhead != NULL)
