@@ -114,7 +114,7 @@ void* memalloc(int size)
 {
 	int movehead = FALSE;
 	int movetail = FALSE;
-	if (size <= 0 || size > blocksize - memgetblocksize())
+	if (size <= 0 || size > blocksize - memgetminimumsize())
 	{
 		fprintf(stderr, "MEMORY ALLOCATION ERROR:\tincorrect size of allocated memory.\n");
 		return NULL;
