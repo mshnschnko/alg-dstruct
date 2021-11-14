@@ -187,20 +187,15 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 		return FALSE;
 	Queue_t* queue = InitQueue();
 	if (!queue)
-	{
-		FreeGraph(graph);
 		return FALSE;
-	}
 	int* use = (int*)malloc(graph->vertexesCount * sizeof(int));
 	if (!use)
 	{
-		FreeGraph(graph);
 		free(queue);
 		return FALSE;
 	}
 	if (!Push(queue, 0))
 	{
-		FreeGraph(graph);
 		if (QueueIsEmpty(queue))
 			free(queue);
 		else
@@ -228,7 +223,6 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 		}
 		if (!Pop(queue))
 		{
-			FreeGraph(graph);
 			if (QueueIsEmpty(queue))
 				free(queue);
 			else
