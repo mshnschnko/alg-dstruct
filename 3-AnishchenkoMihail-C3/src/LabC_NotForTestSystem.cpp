@@ -31,25 +31,6 @@ Queue_t* InitQueue(void)
 	return queue;
 }
 
-void DestroyQueue(Queue_t* queue)
-{
-	if (queue)
-	{
-		if (queue->front)
-		{
-			Elem_t* tmp = queue->back->next, * p = NULL;
-			free(queue->back);
-			while (tmp)
-			{
-				p = tmp;
-				tmp = p->next;
-				free(p);
-			}
-		}
-		free(queue);
-	}
-}
-
 int QueueisEmpty(Queue_t* queue)
 {
 	if (queue->front)
@@ -208,7 +189,6 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 		}
 		Pop(queue);
 	}
-	FreeGraph(graph);
 	free(queue);
 	free(use);
 	return TRUE;

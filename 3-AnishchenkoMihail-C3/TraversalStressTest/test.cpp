@@ -14,14 +14,14 @@ PC configuration:
 /*
 Lab C, Variant 3 (breadth-first traversal with list of contiguous vertices):
 Results:
-    Graph creation time: 26854 ms ms
-    Traversal of the graph time: 49188 ms
-    Total run time: 76045 ms
-    Memory Costs: About 224 MB
+    Graph creation time: 22892 ms
+    Traversal of the graph time: 42613 ms
+    Total run time: 65508 ms
+    Memory Costs: About 194 MB
 */
 
 const char* inputFilename = "Input.txt";
-const int vertexesCount = 650000;
+const int vertexesCount = 600000;
 
 TEST(WidthTraversal_StressTest, GraphCreation)
 {
@@ -75,5 +75,6 @@ TEST(WidthTraversal_StressTest, GraphTraversal)
         FreeGraph(graph);
         ASSERT_TRUE(result);
     }
+    FreeGraph(graph);
     fclose(output);
 }

@@ -8,6 +8,5 @@
 **.config
 **.xml
 **packages
-**/StressTest.txt
-**/Output.txt
+**.txt
 **pch.*

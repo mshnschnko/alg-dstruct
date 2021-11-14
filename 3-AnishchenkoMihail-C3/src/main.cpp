@@ -10,5 +10,6 @@ int main()
 		FreeGraph(graph);
 		return -1;
 	}
+	FreeGraph(graph);
 	return 0;
 }

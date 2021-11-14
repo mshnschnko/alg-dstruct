@@ -39,7 +39,6 @@ Graph_t* ReadGraphFromStream(FILE* stream);
 void FreeGraph(Graph_t* graph);
 int WidthTraversal(FILE* stream, Graph_t* graph);
 Queue_t* InitQueue(void);
-void DestroyQueue(Queue_t* queue);
 int QueueisEmpty(Queue_t* queue);
 void Push(Queue_t* queue, int vertex);
 void Pop(Queue_t* queue);
@@ -75,25 +74,6 @@ Queue_t* InitQueue(void)
 	queue->back = NULL;
 	queue->front = NULL;
 	return queue;
-}
-
-void DestroyQueue(Queue_t* queue)
-{
-	if (queue)
-	{
-		if (queue->front)
-		{
-			Elem_t* tmp = queue->back->next, * p = NULL;
-			free(queue->back);
-			while (tmp)
-			{
-				p = tmp;
-				tmp = p->next;
-				free(p);
-			}
-		}
-		free(queue);
-	}
 }
 
 int QueueisEmpty(Queue_t* queue)
@@ -254,13 +234,12 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 		}
 		Pop(queue);
 	}
-	FreeGraph(graph);
 	free(queue);
 	free(use);
 	return TRUE;
 }
 
-int Lab(void)
+int main(void)
 {
 	Graph_t* graph = ReadGraphFromStream(stdin);
 	if (!graph)
