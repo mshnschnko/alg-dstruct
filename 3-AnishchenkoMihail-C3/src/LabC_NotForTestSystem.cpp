@@ -31,7 +31,7 @@ Queue_t* InitQueue(void)
 	return queue;
 }
 
-int QueueisEmpty(Queue_t* queue)
+int QueueIsEmpty(Queue_t* queue)
 {
 	if (queue->front)
 		return FALSE;
@@ -47,7 +47,7 @@ void Push(Queue_t* queue, int vertex)
 		return;
 	element->vertex = vertex;
 	element->next = NULL;
-	if (QueueisEmpty(queue))
+	if (QueueIsEmpty(queue))
 	{
 		queue->back = element;
 		queue->front = element;
@@ -88,8 +88,6 @@ Graph_t* ReadGraphFromStream(FILE* stream)
 	if (!countBuffer)
 		return NULL;
 	fgets(countBuffer, MAX_LENGTH, stream);
-	if (!countBuffer)
-		return NULL;
 	Graph_t* graph = NULL;
 	graph = (Graph_t*)malloc(sizeof(Graph_t));
 	if (!graph)
@@ -106,7 +104,7 @@ Graph_t* ReadGraphFromStream(FILE* stream)
 	graph->vertexesArray = (Vertex_t*)malloc(graph->vertexesCount * sizeof(Vertex_t));
 	if (!graph->vertexesArray)
 	{
-		free(graph);
+		FreeGraph(graph);
 		return NULL;
 	}
 	for (i = 0; i < graph->vertexesCount; i++)
@@ -176,7 +174,7 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 	Push(queue, 0);
 	use[0] = TRUE;
 	int i;
-	while (!QueueisEmpty(queue))
+	while (!QueueIsEmpty(queue))
 	{
 		fprintf(stream, "%i ", TopFront(queue));
 		for (i = 0; i < graph->vertexesArray[TopFront(queue)].neighboursCount; i++)

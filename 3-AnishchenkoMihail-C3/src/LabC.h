@@ -43,7 +43,7 @@ Graph_t* ReadGraphFromStream(FILE* stream);
 void FreeGraph(Graph_t* graph);
 int WidthTraversal(FILE* stream, Graph_t* graph);
 Queue_t* InitQueue(void);
-int QueueisEmpty(Queue_t* queue);
+int QueueIsEmpty(Queue_t* queue);
 void Push(Queue_t* queue, int vertex);
 void Pop(Queue_t* queue);
 int TopFront(Queue_t* queue);
