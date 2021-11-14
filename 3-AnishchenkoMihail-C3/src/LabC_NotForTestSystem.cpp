@@ -77,14 +77,6 @@ int Push(Queue_t* queue, int vertex)
 	return 1;
 }
 
-//void Pop(Queue_t* queue)
-//{
-//	Elem_t* elemToFree = queue->front;
-//	queue->front = queue->front->next;
-//	free(elemToFree);
-//	return;
-//}
-
 int Pop(Queue_t* queue)
 {
 	Elem_t* temp;
