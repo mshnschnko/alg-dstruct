@@ -31,6 +31,22 @@ Queue_t* InitQueue(void)
 	return queue;
 }
 
+void QueueDestroy(Queue_t* queue)
+{
+	if (queue->front != NULL)
+	{
+		Elem_t* tmp = queue->front->next, * p;
+		free(queue->front);
+		while (tmp != NULL)
+		{
+			p = tmp;
+			tmp = p->next;
+			free(p);
+		}
+	}
+	free(queue);
+}
+
 int QueueIsEmpty(Queue_t* queue)
 {
 	if (queue->front)
@@ -39,12 +55,12 @@ int QueueIsEmpty(Queue_t* queue)
 		return TRUE;
 }
 
-void Push(Queue_t* queue, int vertex)
+int Push(Queue_t* queue, int vertex)
 {
 	Elem_t* element = NULL;
 	element = (Elem_t*)malloc(sizeof(Elem_t));
 	if (!element)
-		return;
+		return 0;
 	element->vertex = vertex;
 	element->next = NULL;
 	if (QueueIsEmpty(queue))
@@ -58,15 +74,26 @@ void Push(Queue_t* queue, int vertex)
 		queue->back->next = element;
 		queue->back = element;
 	}
-	return;
+	return 1;
 }
 
-void Pop(Queue_t* queue)
+//void Pop(Queue_t* queue)
+//{
+//	Elem_t* elemToFree = queue->front;
+//	queue->front = queue->front->next;
+//	free(elemToFree);
+//	return;
+//}
+
+int Pop(Queue_t* queue)
 {
-	Elem_t* elemToFree = queue->front;
+	Elem_t* temp;
+	if (QueueIsEmpty(queue))
+		return 0;
+	temp = queue->front;
 	queue->front = queue->front->next;
-	free(elemToFree);
-	return;
+	free(temp);
+	return 1;
 }
 
 int TopFront(Queue_t* queue)
@@ -171,7 +198,14 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 		free(queue);
 		return FALSE;
 	}
-	Push(queue, 0);
+	if (!Push(queue, 0))
+	{
+		FreeGraph(graph);
+		if (QueueIsEmpty(queue))
+			free(queue);
+		else
+			QueueDestroy(queue);
+	}
 	use[0] = TRUE;
 	int i;
 	while (!QueueIsEmpty(queue))
@@ -181,11 +215,25 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 		{
 			if (use[graph->vertexesArray[TopFront(queue)].neighbours[i]] != TRUE)
 			{
-				Push(queue, graph->vertexesArray[TopFront(queue)].neighbours[i]);
+				if (!Push(queue, graph->vertexesArray[TopFront(queue)].neighbours[i]))
+				{
+					FreeGraph(graph);
+					if (QueueIsEmpty(queue))
+						free(queue);
+					else
+						QueueDestroy(queue);
+				}
 				use[graph->vertexesArray[TopFront(queue)].neighbours[i]] = TRUE;
 			}
 		}
-		Pop(queue);
+		if (!Pop(queue))
+		{
+			FreeGraph(graph);
+			if (QueueIsEmpty(queue))
+				free(queue);
+			else
+				QueueDestroy(queue);
+		}
 	}
 	free(queue);
 	free(use);

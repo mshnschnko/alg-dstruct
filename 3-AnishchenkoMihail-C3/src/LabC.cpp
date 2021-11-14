@@ -39,9 +39,10 @@ Graph_t* ReadGraphFromStream(FILE* stream);
 void FreeGraph(Graph_t* graph);
 int WidthTraversal(FILE* stream, Graph_t* graph);
 Queue_t* InitQueue(void);
+void QueueDestroy(Queue_t* queue);
 int QueueIsEmpty(Queue_t* queue);
-void Push(Queue_t* queue, int vertex);
-void Pop(Queue_t* queue);
+int Push(Queue_t* queue, int vertex);
+int Pop(Queue_t* queue);
 int TopFront(Queue_t* queue);
 int TopBack(Queue_t* queue);
 
@@ -84,12 +85,28 @@ int QueueIsEmpty(Queue_t* queue)
 		return TRUE;
 }
 
-void Push(Queue_t* queue, int vertex)
+void QueueDestroy(Queue_t* queue)
+{
+	if (queue->front != NULL)
+	{
+		Elem_t* tmp = queue->front->next, * p;
+		free(queue->front);
+		while (tmp != NULL)
+		{
+			p = tmp;
+			tmp = p->next;
+			free(p);
+		}
+	}
+	free(queue);
+}
+
+int Push(Queue_t* queue, int vertex)
 {
 	Elem_t* element = NULL;
 	element = (Elem_t*)malloc(sizeof(Elem_t));
 	if (!element)
-		return;
+		return 0;
 	element->vertex = vertex;
 	element->next = NULL;
 	if (QueueIsEmpty(queue))
@@ -103,15 +120,18 @@ void Push(Queue_t* queue, int vertex)
 		queue->back->next = element;
 		queue->back = element;
 	}
-	return;
+	return 1;
 }
 
-void Pop(Queue_t* queue)
+int Pop(Queue_t* queue)
 {
-	Elem_t* elemToFree = queue->front;
+	Elem_t* temp;
+	if (QueueIsEmpty(queue))
+		return 0;
+	temp = queue->front;
 	queue->front = queue->front->next;
-	free(elemToFree);
-	return;
+	free(temp);
+	return 1;
 }
 
 int TopFront(Queue_t* queue)
@@ -136,7 +156,10 @@ Graph_t* ReadGraphFromStream(FILE* stream)
 	Graph_t* graph = NULL;
 	graph = (Graph_t*)malloc(sizeof(Graph_t));
 	if (!graph)
+	{
+		free(countBuffer);
 		return NULL;
+	}
 	graph->vertexesCount = atoi(countBuffer);
 	free(countBuffer);
 	if (!graph->vertexesCount)
@@ -206,17 +229,22 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 	Queue_t* queue = InitQueue();
 	if (!queue)
 	{
-		FreeGraph(graph);
+		//FreeGraph(graph);
 		return FALSE;
 	}
 	int* use = (int*)malloc(graph->vertexesCount * sizeof(int));
 	if (!use)
 	{
-		FreeGraph(graph);
 		free(queue);
 		return FALSE;
 	}
-	Push(queue, 0);
+	if (!Push(queue, 0))
+	{
+		if (QueueIsEmpty(queue))
+			free(queue);
+		else
+			QueueDestroy(queue);
+	}
 	use[0] = TRUE;
 	int i;
 	while (!QueueIsEmpty(queue))
@@ -226,11 +254,23 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 		{
 			if (use[graph->vertexesArray[TopFront(queue)].neighbours[i]] != TRUE)
 			{
-				Push(queue, graph->vertexesArray[TopFront(queue)].neighbours[i]);
+				if (!Push(queue, graph->vertexesArray[TopFront(queue)].neighbours[i]))
+				{
+					if (QueueIsEmpty(queue))
+						free(queue);
+					else
+						QueueDestroy(queue);
+				}
 				use[graph->vertexesArray[TopFront(queue)].neighbours[i]] = TRUE;
 			}
 		}
-		Pop(queue);
+		if (!Pop(queue))
+		{
+			if (QueueIsEmpty(queue))
+				free(queue);
+			else
+				QueueDestroy(queue);
+		}
 	}
 	free(queue);
 	free(use);
