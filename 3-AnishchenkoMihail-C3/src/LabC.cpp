@@ -237,10 +237,9 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 	}
 	if (!Push(queue, 0))
 	{
-		if (QueueIsEmpty(queue))
-			free(queue);
-		else
-			QueueDestroy(queue);
+		QueueDestroy(queue);
+		free(use);
+		return FALSE;
 	}
 	use[0] = TRUE;
 	int i;
