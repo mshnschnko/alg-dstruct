@@ -172,7 +172,7 @@ Graph_t* ReadGraphFromStream(FILE* stream)
 	graph->vertexesArray = (Vertex_t*)malloc(graph->vertexesCount * sizeof(Vertex_t));
 	if (!graph->vertexesArray)
 	{
-		FreeGraph(graph);
+		free(graph);
 		return NULL;
 	}
 	for (i = 0; i < graph->vertexesCount; i++)
@@ -253,20 +253,18 @@ int WidthTraversal(FILE* stream, Graph_t* graph)
 			{
 				if (!Push(queue, graph->vertexesArray[TopFront(queue)].neighbours[i]))
 				{
-					if (QueueIsEmpty(queue))
-						free(queue);
-					else
-						QueueDestroy(queue);
+					QueueDestroy(queue);
+					free(use);
+					return FALSE;
 				}
 				use[graph->vertexesArray[TopFront(queue)].neighbours[i]] = TRUE;
 			}
 		}
 		if (!Pop(queue))
 		{
-			if (QueueIsEmpty(queue))
-				free(queue);
-			else
-				QueueDestroy(queue);
+			QueueDestroy(queue);
+			free(use);
+			return FALSE;
 		}
 	}
 	free(queue);
