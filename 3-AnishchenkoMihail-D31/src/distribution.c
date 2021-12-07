@@ -6,6 +6,7 @@
 unsigned** table;
 int* result;
 int iter;
+int countOfMinus;
 
 int CreateTable(unsigned T, unsigned D)
 {
@@ -36,20 +37,20 @@ void DestroyTable(unsigned n)
 	free(table);
 }
 
-int PrintAnswer(unsigned* timeOfTasks, int k, int s)
+void GetAnswer(unsigned* timeOfTasks, int* rowIndexes, int k, int s)
 {
 	if (table[k][s] == 0)
-		return -1;
+		return;
 	if (table[k - 1][s] == table[k][s])
-		PrintAnswer(timeOfTasks, k - 1, s);
+		GetAnswer(timeOfTasks, rowIndexes, k - 1, s);
 	else
 	{
-		PrintAnswer(timeOfTasks, k - 1, s - timeOfTasks[k - 1]);
+		GetAnswer(timeOfTasks, rowIndexes, k - 1, s - timeOfTasks[rowIndexes[k] - 1]);
 		int* tmp = (int*)realloc(result, (iter + 1) * sizeof(int));
 		if (!tmp)
 			return;
 		result = tmp;
-		result[iter] = k;
+		result[iter] = rowIndexes[k];
 		iter++;
 	}
 }
@@ -65,48 +66,75 @@ void PrintTable(unsigned tasks, unsigned fullTime)
 	}
 }
 
-void PrintResult(void)
+void PrintResult(FILE* output)
 {
 	int i;
 	for (i = 0; i < iter; i++)
 	{
 		if (result[i] != -1)
-			printf("%u ", result[i]);
+			fprintf(output, "%u ", result[i]);
 		else
-			printf("\n");
+			fprintf(output, "\n");
 	}
+}
+
+unsigned* FillRowIndexes(unsigned tasks)
+{
+	unsigned* rowIndexes = NULL;
+	int i, j = 0, idx = 0;
+	for (i = 0; i < iter; i++)
+		if (result[i] == -1)
+			countOfMinus++;
+
+	rowIndexes = (int*)malloc((tasks + 1 - iter + countOfMinus) * sizeof(int));
+	if (!rowIndexes)
+		return NULL;
+	if (iter == 0)
+	{
+		for (i = 0; i <= tasks; i++)
+			rowIndexes[i] = i;
+		return rowIndexes;
+	}
+
+	for (i = 0; i <= tasks - iter + countOfMinus; i++)
+	{
+		
+		for (j = 0; j < iter; j++)
+			while (idx == result[j]) //if (idx == result[j])
+				idx++;
+		rowIndexes[i] = idx;
+		idx++;
+	}
+	return rowIndexes;
 }
 
 int Distribution(unsigned tasks, unsigned fullTime, unsigned staff, unsigned* timeOfTasks)
 {
-	if (!CreateTable(tasks, fullTime))
+	int* rowIndexes = NULL;
+	rowIndexes = FillRowIndexes(tasks);
+	if (!rowIndexes)
 		return -1;
+	if (!CreateTable(tasks, fullTime))
+	{
+		free(rowIndexes);
+		return -1;
+	}
+		
 	int i, j;
 	for (i = 0; i <= fullTime; i++)
 		table[0][i] = 0;
-	for (i = 0; i <= fullTime; i++)
-		printf("%u ", table[0][i]);
-	printf("\n");
 	for (i = 0; i <= tasks; i++)
-	{
-		printf("%i", i);
 		table[i][0] = 0;
-	}
-	printf("\n");
-
 	
-	for (i = 1; i <= tasks; i++)
-	{
+	for (i = 1; i <= tasks - iter + countOfMinus; i++)
 		for (j = 1; j <= fullTime; j++)
 		{
-			if (j >= timeOfTasks[i - 1])
-				table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[i - 1]] + timeOfTasks[i - 1] ? table[i - 1][j] : table[i - 1][j - timeOfTasks[i - 1]] + timeOfTasks[i - 1];
+			if (j >= timeOfTasks[rowIndexes[i] - 1])
+				table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] : table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1];
 			else
 				table[i][j] = table[i - 1][j];
 		}
-		PrintTable(tasks, fullTime);
-	}
-	PrintAnswer(timeOfTasks, i - 1, j - 1);
+	GetAnswer(timeOfTasks, rowIndexes, i - 1, j - 1);
 	int* tmp = (int*)realloc(result, (iter + 1) * sizeof(int));
 	if (!tmp)
 		return -1;
@@ -116,7 +144,7 @@ int Distribution(unsigned tasks, unsigned fullTime, unsigned staff, unsigned* ti
 	return 0;
 }
 
-int LabSolution(FILE* input)
+int LabSolution(FILE* input, FILE* output)
 {
 	unsigned T, D, m;
 	fscanf(input, "%u %u %u\n", &T, &D, &m);
@@ -125,25 +153,39 @@ int LabSolution(FILE* input)
 	int i = 0;
 	for (i = 0; i < T; i++)
 		fscanf(input, "%u ", &timeOfTasks[i]);
-	printf("%u %u %u\n", T, D, m);
 	result = (int*)malloc(sizeof(int));
 	if (!result)
 	{
 		free(timeOfTasks);
 		return -1;
 	}
+	result[0] = -1;
 	iter = 0;
-	if (Distribution(T, D, m, timeOfTasks) == -1)
+	countOfMinus = 0;
+	int activeTasks = T;
+	while (m > 0 && activeTasks > 0)
 	{
-		free(timeOfTasks);
+		if (Distribution(T, D, m, timeOfTasks) == -1)
+		{
+			free(timeOfTasks);
+			DestroyTable(T);
+			printf("ERROR in Distribution");
+			return -1;
+		}
 		DestroyTable(T);
-		printf("pizda");
-		return -1;
+		activeTasks = T + 1 - iter + countOfMinus;
+		m--;
 	}
-	PrintResult();
-	free (timeOfTasks);
-	DestroyTable(T);
+
+	if (m == 0 && activeTasks > 0)
+		fprintf(output, "0");
+	if ((m == 0 && activeTasks == 0) || (m > 0 && activeTasks == 0))
+		PrintResult(output);
+
+	free(timeOfTasks);
 	free(result);
+	fclose(input);
+	fclose(output);
 	return 0;
 }
 
@@ -153,5 +195,9 @@ int main(void)
 	FILE* input = fopen(inputFileName, "r");
 	if (!input)
 		return -1;
-	return LabSolution(input);
+	const char* outputFileName = "output.txt";
+	FILE* output = fopen(outputFileName, "w");
+	if (!output)
+		return -1;
+	return LabSolution(input, output);
 }
