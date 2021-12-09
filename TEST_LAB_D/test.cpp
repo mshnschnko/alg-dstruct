@@ -39,7 +39,7 @@ private:
 	_CrtMemState m_before, m_after, m_diff;
 };
 
-TEST_F(FunctionalTest, Example_from_task_file)
+TEST_F(FunctionalTest, ExampleFromTaskFile)
 {
 	const char* inputFileName = "test_files/example_from_task_file/Input.txt";
 	const char* outputFileName = "test_files/example_from_task_file/Output.txt";
@@ -62,7 +62,7 @@ TEST_F(FunctionalTest, Example_from_task_file)
 	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
 }
 
-TEST_F(FunctionalTest, Not_enough_employees)
+TEST_F(FunctionalTest, NotEnoughEmployees)
 {
 	const char* inputFileName = "test_files/not_enough_employees/Input.txt";
 	const char* outputFileName = "test_files/not_enough_employees/Output.txt";
@@ -85,7 +85,7 @@ TEST_F(FunctionalTest, Not_enough_employees)
 	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
 }
 
-TEST_F(FunctionalTest, tasks_ended_earlier_than_employees)
+TEST_F(FunctionalTest, tasksEndedEarlierThanEmployees)
 {
 	const char* inputFileName = "test_files/tasks_ended_earlier_than_employees/Input.txt";
 	const char* outputFileName = "test_files/tasks_ended_earlier_than_employees/Output.txt";
@@ -108,7 +108,7 @@ TEST_F(FunctionalTest, tasks_ended_earlier_than_employees)
 	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
 }
 
-TEST_F(FunctionalTest, all_employees_are_used_exists)
+TEST_F(FunctionalTest, AllEmployeesAreUsedExists)
 {
 	const char* inputFileName = "test_files/all_employees_are_used_exists/Input.txt";
 	const char* outputFileName = "test_files/all_employees_are_used_exists/Output.txt";
@@ -131,7 +131,7 @@ TEST_F(FunctionalTest, all_employees_are_used_exists)
 	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
 }
 
-TEST(Stress_test, Generate_input)
+TEST(Stress_test, GenerateInput)
 {
 	FILE* input = fopen("test_files/stress_test/Input.txt", "w");
 	ASSERT_NE(nullptr, input);
