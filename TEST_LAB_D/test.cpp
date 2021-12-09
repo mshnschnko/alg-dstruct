@@ -21,12 +21,13 @@ Results:
 	Memory Costs: About 5 MB
 */
 
-class FunctionalTest : public ::testing::Test {
+class FunctionalTest : public ::testing::Test
+{
 protected:
 	void SetUp() {
 		_CrtMemCheckpoint(&m_before);
 	}
-	void TearDown() {
+	void TearDown() {   
 		_CrtMemCheckpoint(&m_after);
 		if (_CrtMemDifference(&m_diff, &m_before, &m_after)) {
 			_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
