@@ -1,7 +1,4 @@
-#pragma warning(disable: 4996)
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "labdstr.h"
 
 unsigned** table;
 int* result;
@@ -60,17 +57,6 @@ int GetAnswer(unsigned* timeOfTasks, int* rowIndexes, int k, int s)
 	return 0;
 }
 
-void PrintTable(unsigned tasks, unsigned fullTime)
-{
-	int i, j;
-	for (i = 0; i <= tasks; i++)
-	{
-		for (j = 0; j <= fullTime; j++)
-			printf("%u ", table[i][j]);
-		printf("\n");
-	}
-}
-
 void PrintResult(FILE* output)
 {
 	int i;
@@ -87,11 +73,6 @@ unsigned* FillRowIndexes(unsigned tasks)
 {
 	unsigned* rowIndexes = NULL;
 	int i, j = 0, idx = 0;
-	//countOfMinus = 0;
-	//for (i = 0; i < iter; i++)
-	//	if (result[i] == -1)
-	//		countOfMinus++;
-
 	rowIndexes = (int*)malloc((tasks + 1 - iter + countOfMinus) * sizeof(int));
 	if (!rowIndexes)
 		return NULL;
@@ -101,13 +82,15 @@ unsigned* FillRowIndexes(unsigned tasks)
 			rowIndexes[i] = i;
 		return rowIndexes;
 	}
-
 	for (i = 0; i <= tasks - iter + countOfMinus; i++)
 	{
 		
 		for (j = 0; j < iter; j++)
-			while (idx == result[j]) //if (idx == result[j])
+			if (idx == result[j])
+			{
+				j = -1;
 				idx++;
+			}
 		rowIndexes[i] = idx;
 		idx++;
 	}
@@ -148,21 +131,36 @@ int Distribution(unsigned tasks, unsigned fullTime, unsigned* timeOfTasks)
 	result = tmp;
 	result[iter] = -1;
 	iter++;
+	free(rowIndexes);
 	return 0;
 }
 
-int LabSolution(FILE* input, FILE* output)
+int LabSolution(const char* inputFileName, const char* outputFileName)
 {
+	FILE* input = fopen(inputFileName, "r");
+	if (!input)
+		return -1;
+	FILE* output = fopen(outputFileName, "w");
+	if (!output)
+		return -1;
 	unsigned T, D, m;
 	fscanf(input, "%u %u %u\n", &T, &D, &m);
 	unsigned* timeOfTasks = NULL;
 	timeOfTasks = (unsigned*)malloc(T * sizeof(unsigned));
+	if (!timeOfTasks)
+	{
+		fclose(input);
+		fclose(output);
+		return -1;
+	}
 	int i = 0;
 	for (i = 0; i < T; i++)
 		fscanf(input, "%u ", &timeOfTasks[i]);
+	fclose(input);
 	result = (int*)malloc(sizeof(int));
 	if (!result)
 	{
+		fclose(output);
 		free(timeOfTasks);
 		return -1;
 	}
@@ -179,40 +177,17 @@ int LabSolution(FILE* input, FILE* output)
 			printf("ERROR in Distribution");
 			return -1;
 		}
-		DestroyTable(T);
+		DestroyTable(T + 1);
 		activeTasks = T + 1 - iter + countOfMinus;
 		m--;
 		countOfMinus++;
-		//printf("active tasks = %i\n", activeTasks);
-		//printf("minus = %i\n", countOfMinus);
-		//printf("result: ");
-		//for (i = 0; i < iter; i++)
-		//	printf("%i ", result[i]);
-		//printf("\n");
-		//PrintResult(stdout);
 	}
-
 	if (m == 0 && activeTasks > 0)
 		fprintf(output, "0");
 	if ((m == 0 && activeTasks == 0) || (m > 0 && activeTasks == 0))
 		PrintResult(output);
-
 	free(timeOfTasks);
 	free(result);
-	fclose(input);
 	fclose(output);
 	return 0;
-}
-
-int main(void)
-{
-	const char* inputFileName = "input.txt";
-	FILE* input = fopen(inputFileName, "r");
-	if (!input)
-		return -1;
-	const char* outputFileName = "output.txt";
-	FILE* output = fopen(outputFileName, "w");
-	if (!output)
-		return -1;
-	return LabSolution(input, output);
 }
