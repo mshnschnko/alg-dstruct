@@ -13,7 +13,7 @@ int CreateTable(unsigned T, unsigned D)
 		return -1;
 	for (i = 0; i < T + 1; i++)
 	{
-		table[i] = (unsigned*)malloc((D + 1) * sizeof(unsigned));
+		table[i] = (unsigned*)malloc(D * sizeof(unsigned));
 		if (!table[i])
 		{
 			for (j = 0; j < i; j++)
@@ -35,6 +35,8 @@ void DestroyTable(unsigned n)
 
 int GetAnswer(unsigned* timeOfTasks, int* rowIndexes, int k, int s)
 {
+	if (s < 0)
+		return 0;
 	if (table[k][s] == 0)
 		return 0;
 	if (table[k - 1][s] == table[k][s])
@@ -60,7 +62,7 @@ int GetAnswer(unsigned* timeOfTasks, int* rowIndexes, int k, int s)
 void PrintResult(FILE* output)
 {
 	int i;
-	for (i = 0; i < iter; i++)
+	for (i = 0; i < iter - 1; i++)
 	{
 		if (result[i] != -1)
 			fprintf(output, "%u ", result[i]);
@@ -110,24 +112,31 @@ int Distribution(unsigned tasks, unsigned fullTime, unsigned* timeOfTasks)
 	}
 		
 	int i, j;
-	for (i = 0; i <= fullTime; i++)
+	for (i = 0; i < fullTime; i++)
 		table[0][i] = 0;
-	for (i = 0; i <= tasks; i++)
-		table[i][0] = 0;
-	
 	for (i = 1; i <= tasks - iter + countOfMinus; i++)
-		for (j = 1; j <= fullTime; j++)
+		for (j = 0; j < fullTime; j++)
 		{
-			if (j >= timeOfTasks[rowIndexes[i] - 1])
-				table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] : table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1];
+			if (j + 1 >= timeOfTasks[rowIndexes[i] - 1])
+				if (j - timeOfTasks[rowIndexes[i] - 1] < 0)
+					table[i][j] = table[i - 1][j] > timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] : timeOfTasks[rowIndexes[i] - 1];
+				else
+					table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] :
+						table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1];
 			else
 				table[i][j] = table[i - 1][j];
 		}
 	if (GetAnswer(timeOfTasks, rowIndexes, i - 1, j - 1) != 0)
+	{
+		free(rowIndexes);
 		return -1;
+	}
 	int* tmp = (int*)realloc(result, (iter + 1) * sizeof(int));
 	if (!tmp)
+	{
+		free(rowIndexes);
 		return -1;
+	}
 	result = tmp;
 	result[iter] = -1;
 	iter++;
@@ -172,6 +181,7 @@ int LabSolution(const char* inputFileName, const char* outputFileName)
 	{
 		if (Distribution(T, D, timeOfTasks) == -1)
 		{
+			free(result);
 			free(timeOfTasks);
 			DestroyTable(T);
 			printf("ERROR in Distribution");

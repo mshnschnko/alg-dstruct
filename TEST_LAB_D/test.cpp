@@ -17,8 +17,8 @@ PC configuration:
 /*
 Lab D, Variant 31 (TaskManagment):
 Results:
-	Stress Test Time: 42960 ms
-	Memory Costs: About 5 MB
+	Stress Test Time: 44012 ms
+	Memory Costs: About 44 MB
 */
 
 class FunctionalTest : public ::testing::Test
@@ -40,103 +40,55 @@ private:
 	_CrtMemState m_before, m_after, m_diff;
 };
 
-TEST_F(FunctionalTest, ExampleFromTaskFile)
+void CheckAnswer(const char* inputFileName, const char* outputFileName, const char* correctOutputFileName)
 {
-	const char* inputFileName = "test_files/example_from_task_file/Input.txt";
-	const char* outputFileName = "test_files/example_from_task_file/Output.txt";
-	const char* correctOutputFileName = "test_files/example_from_task_file/CorrectOutput.txt";
 	int res = LabSolution(inputFileName, outputFileName);
 	EXPECT_EQ(res, 0);
 	FILE* outputForCheck = fopen(outputFileName, "r");
 	ASSERT_NE(nullptr, outputForCheck);
-	unsigned answer[MAX_TASKS_PER_STAFF_MEMBER] = {GARBAGE};
+	unsigned answer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
 	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(outputForCheck, "%d", &answer[i]))
+		if (!fscanf(outputForCheck, "%c", &answer[i]))
 			break;
 	fclose(outputForCheck);
 	FILE* correctOutputForCheck = fopen(correctOutputFileName, "r");
 	unsigned correctAnswer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
 	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(correctOutputForCheck, "%d", &correctAnswer[i]))
+		if (!fscanf(correctOutputForCheck, "%c", &correctAnswer[i]))
 			break;
 	fclose(correctOutputForCheck);
 	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
+}
+
+TEST_F(FunctionalTest, ExampleFromTaskFile)
+{
+	CheckAnswer("test_files/example_from_task_file/Input.txt", "test_files/example_from_task_file/Output.txt", 
+		"test_files/example_from_task_file/CorrectOutput.txt");
 }
 
 TEST_F(FunctionalTest, NotEnoughEmployees)
 {
-	const char* inputFileName = "test_files/not_enough_employees/Input.txt";
-	const char* outputFileName = "test_files/not_enough_employees/Output.txt";
-	const char* correctOutputFileName = "test_files/not_enough_employees/CorrectOutput.txt";
-	int res = LabSolution(inputFileName, outputFileName);
-	EXPECT_EQ(res, 0);
-	FILE* outputForCheck = fopen(outputFileName, "r");
-	ASSERT_NE(nullptr, outputForCheck);
-	unsigned answer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
-	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(outputForCheck, "%d", &answer[i]))
-			break;
-	fclose(outputForCheck);
-	FILE* correctOutputForCheck = fopen(correctOutputFileName, "r");
-	unsigned correctAnswer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
-	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(correctOutputForCheck, "%d", &correctAnswer[i]))
-			break;
-	fclose(correctOutputForCheck);
-	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
+	CheckAnswer("test_files/not_enough_employees/Input.txt", "test_files/not_enough_employees/Output.txt", 
+		"test_files/not_enough_employees/CorrectOutput.txt");
 }
 
 TEST_F(FunctionalTest, tasksEndedEarlierThanEmployees)
 {
-	const char* inputFileName = "test_files/tasks_ended_earlier_than_employees/Input.txt";
-	const char* outputFileName = "test_files/tasks_ended_earlier_than_employees/Output.txt";
-	const char* correctOutputFileName = "test_files/tasks_ended_earlier_than_employees/CorrectOutput.txt";
-	int res = LabSolution(inputFileName, outputFileName);
-	EXPECT_EQ(res, 0);
-	FILE* outputForCheck = fopen(outputFileName, "r");
-	ASSERT_NE(nullptr, outputForCheck);
-	unsigned answer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
-	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(outputForCheck, "%d", &answer[i]))
-			break;
-	fclose(outputForCheck);
-	FILE* correctOutputForCheck = fopen(correctOutputFileName, "r");
-	unsigned correctAnswer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
-	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(correctOutputForCheck, "%d", &correctAnswer[i]))
-			break;
-	fclose(correctOutputForCheck);
-	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
+	CheckAnswer("test_files/tasks_ended_earlier_than_employees/Input.txt", "test_files/tasks_ended_earlier_than_employees/Output.txt", 
+		"test_files/tasks_ended_earlier_than_employees/CorrectOutput.txt");
 }
 
 TEST_F(FunctionalTest, AllEmployeesAreUsedExists)
 {
-	const char* inputFileName = "test_files/all_employees_are_used_exists/Input.txt";
-	const char* outputFileName = "test_files/all_employees_are_used_exists/Output.txt";
-	const char* correctOutputFileName = "test_files/all_employees_are_used_exists/CorrectOutput.txt";
-	int res = LabSolution(inputFileName, outputFileName);
-	EXPECT_EQ(res, 0);
-	FILE* outputForCheck = fopen(outputFileName, "r");
-	ASSERT_NE(nullptr, outputForCheck);
-	unsigned answer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
-	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(outputForCheck, "%d", &answer[i]))
-			break;
-	fclose(outputForCheck);
-	FILE* correctOutputForCheck = fopen(correctOutputFileName, "r");
-	unsigned correctAnswer[MAX_TASKS_PER_STAFF_MEMBER] = { GARBAGE };
-	for (int i = 0; i < MAX_TASKS_PER_STAFF_MEMBER; i++)
-		if (!fscanf(correctOutputForCheck, "%d", &correctAnswer[i]))
-			break;
-	fclose(correctOutputForCheck);
-	EXPECT_TRUE(!memcmp(answer, correctAnswer, MAX_TASKS_PER_STAFF_MEMBER * sizeof(unsigned)));
+	CheckAnswer("test_files/all_employees_are_used_exists/Input.txt", "test_files/all_employees_are_used_exists/Output.txt", 
+		"test_files/all_employees_are_used_exists/CorrectOutput.txt");
 }
 
 TEST(Stress_test, GenerateInput)
 {
 	FILE* input = fopen("test_files/stress_test/Input.txt", "w");
 	ASSERT_NE(nullptr, input);
-	unsigned T = 3500, D = 70, m = 3000;
+	unsigned T = 1000, D = 10000, m = 700;
 	fprintf(input, "%u %u %u\n", T, D, m);
 	for (int i = 0; i < (int)T; i++)
 		fprintf(input, "%d ", (rand() % D + 1));
