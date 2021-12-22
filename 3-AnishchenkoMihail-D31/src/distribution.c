@@ -152,10 +152,10 @@ int LabSolution(const char* inputFileName, const char* outputFileName)
 	FILE* output = fopen(outputFileName, "w");
 	if (!output)
 		return -1;
-	unsigned T, D, m;
-	fscanf(input, "%u %u %u\n", &T, &D, &m);
+	unsigned tasks, fullTime, staffMembers;
+	fscanf(input, "%u %u %u\n", &tasks, &fullTime, &staffMembers);
 	unsigned* timeOfTasks = NULL;
-	timeOfTasks = (unsigned*)malloc(T * sizeof(unsigned));
+	timeOfTasks = (unsigned*)malloc(tasks * sizeof(unsigned));
 	if (!timeOfTasks)
 	{
 		fclose(input);
@@ -163,7 +163,7 @@ int LabSolution(const char* inputFileName, const char* outputFileName)
 		return -1;
 	}
 	int i = 0;
-	for (i = 0; i < T; i++)
+	for (i = 0; i < tasks; i++)
 		fscanf(input, "%u ", &timeOfTasks[i]);
 	fclose(input);
 	result = (int*)malloc(sizeof(int));
@@ -176,25 +176,25 @@ int LabSolution(const char* inputFileName, const char* outputFileName)
 	result[0] = -1;
 	iter = 0;
 	countOfMinus = 0;
-	int activeTasks = T;
-	while (m > 0 && activeTasks > 0)
+	int activeTasks = tasks;
+	while (staffMembers > 0 && activeTasks > 0)
 	{
-		if (Distribution(T, D, timeOfTasks) == -1)
+		if (Distribution(tasks, fullTime, timeOfTasks) == -1)
 		{
 			free(result);
 			free(timeOfTasks);
-			DestroyTable(T);
+			DestroyTable(tasks);
 			printf("ERROR in Distribution");
 			return -1;
 		}
-		DestroyTable(T + 1);
-		activeTasks = T + 1 - iter + countOfMinus;
-		m--;
+		DestroyTable(tasks + 1);
+		activeTasks = tasks + 1 - iter + countOfMinus;
+		staffMembers--;
 		countOfMinus++;
 	}
-	if (m == 0 && activeTasks > 0)
+	if (staffMembers == 0 && activeTasks > 0)
 		fprintf(output, "0");
-	if ((m == 0 && activeTasks == 0) || (m > 0 && activeTasks == 0))
+	if ((staffMembers == 0 && activeTasks == 0) || (staffMembers > 0 && activeTasks == 0))
 		PrintResult(output);
 	free(timeOfTasks);
 	free(result);

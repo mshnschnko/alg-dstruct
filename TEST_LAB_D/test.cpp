@@ -88,10 +88,10 @@ TEST(Stress_test, GenerateInput)
 {
 	FILE* input = fopen("test_files/stress_test/Input.txt", "w");
 	ASSERT_NE(nullptr, input);
-	unsigned T = 1000, D = 10000, m = 700;
-	fprintf(input, "%u %u %u\n", T, D, m);
-	for (int i = 0; i < (int)T; i++)
-		fprintf(input, "%d ", (rand() % D + 1));
+	unsigned tasks = 1000, fullTime = 10000, staffMembers = 700;
+	fprintf(input, "%u %u %u\n", tasks, fullTime, staffMembers);
+	for (int i = 0; i < (int)tasks; i++)
+		fprintf(input, "%d ", (rand() % fullTime + 1));
 	fclose(input);
 }
 
