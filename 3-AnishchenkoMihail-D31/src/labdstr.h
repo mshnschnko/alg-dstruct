@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	int CreateTable(unsigned T, unsigned D);
+	int CreateTable(unsigned tasks, unsigned fullTime);
 	void DestroyTable(unsigned n);
 	int GetAnswer(unsigned* timeOfTasks, int* rowIndexes, int k, int s);
 	void PrintResult(FILE* output);

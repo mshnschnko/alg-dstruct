@@ -4,16 +4,16 @@ unsigned** table;
 int* result;
 int iter, countOfMinus;
 
-int CreateTable(unsigned T, unsigned D)
+int CreateTable(unsigned tasks, unsigned fullTime)
 {
 	table = NULL;
 	int i, j;
-	table = (unsigned**)malloc((T + 1) * sizeof(unsigned*));
+	table = (unsigned**)malloc((tasks + 1) * sizeof(unsigned*));
 	if (!table)
 		return -1;
-	for (i = 0; i < T + 1; i++)
+	for (i = 0; i < tasks + 1; i++)
 	{
-		table[i] = (unsigned*)malloc(D * sizeof(unsigned));
+		table[i] = (unsigned*)malloc(fullTime * sizeof(unsigned));
 		if (!table[i])
 		{
 			for (j = 0; j < i; j++)
@@ -118,10 +118,7 @@ int Distribution(unsigned tasks, unsigned fullTime, unsigned* timeOfTasks)
 		for (j = 0; j < fullTime; j++)
 		{
 			if (j + 1 >= timeOfTasks[rowIndexes[i] - 1])
-				if (j - timeOfTasks[rowIndexes[i] - 1] < 0)
-					table[i][j] = table[i - 1][j] > timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] : timeOfTasks[rowIndexes[i] - 1];
-				else
-					table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] :
+				table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] :
 						table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1];
 			else
 				table[i][j] = table[i - 1][j];
@@ -183,7 +180,8 @@ int LabSolution(const char* inputFileName, const char* outputFileName)
 		{
 			free(result);
 			free(timeOfTasks);
-			DestroyTable(tasks);
+			DestroyTable(tasks + 1);
+			fclose(output);
 			printf("ERROR in Distribution");
 			return -1;
 		}
