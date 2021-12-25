@@ -25,22 +25,28 @@ class CheckAnswer : public FunctionalTest{};
 TEST_F(FunctionalTest, EmptyTree)
 {
     tree_t* tree = ReadBinaryTree("test_files/empty_tree/Input.txt");
+
     EXPECT_EQ(tree, nullptr);
 }
 
 TEST_F(FunctionalTest, OneEmptyBranch)
 {
     tree_t* tree = ReadBinaryTree("test_files/one_empty_branch/Input.txt");
-    EXPECT_NE(tree, nullptr);
+
+    ASSERT_NE(tree, nullptr);
     EXPECT_EQ(tree->left, nullptr);
     EXPECT_EQ(tree->right, nullptr);
+
+    EXPECT_STREQ(tree->name, "once");
+
     FreeTree(tree);
 }
 
 TEST_F(FunctionalTest, UnidirectionalTree)
 {
     tree_t* tree = ReadBinaryTree("test_files/unidirectional_tree/Input.txt");
-    EXPECT_NE(tree, nullptr);
+
+    ASSERT_NE(tree, nullptr);
     EXPECT_EQ(tree->left, nullptr);
     EXPECT_NE(tree->right, nullptr);
     EXPECT_EQ(tree->right->left, nullptr);
@@ -49,32 +55,34 @@ TEST_F(FunctionalTest, UnidirectionalTree)
     EXPECT_NE(tree->right->right->right, nullptr);
     EXPECT_EQ(tree->right->right->right->right, nullptr);
     EXPECT_EQ(tree->right->right->right->right, nullptr);
+
+    EXPECT_STREQ(tree->name, "one");
+    EXPECT_STREQ(tree->right->name, "two");
+    EXPECT_STREQ(tree->right->right->name, "three");
+    EXPECT_STREQ(tree->right->right->right->name, "four");
+
     FreeTree(tree);
 }
 
 TEST_F(FunctionalTest, NormalTree)
 {
     tree_t* tree = ReadBinaryTree("test_files/normal_tree/Input.txt");
-    EXPECT_NE(tree, nullptr);
 
+    ASSERT_NE(tree, nullptr);
     EXPECT_NE(tree->left, nullptr);
     EXPECT_NE(tree->right, nullptr);
-
     EXPECT_NE(tree->left->left, nullptr);
     EXPECT_EQ(tree->left->right, nullptr);
-
     EXPECT_NE(tree->left->left->right, nullptr);
     EXPECT_EQ(tree->left->left->left, nullptr);
-
     EXPECT_EQ(tree->left->left->right->left, nullptr);
     EXPECT_EQ(tree->left->left->right->right, nullptr);
-
     EXPECT_NE(tree->right->left, nullptr);
-    EXPECT_EQ(tree->right->right, nullptr);
-
+    EXPECT_NE(tree->right->right, nullptr);
+    EXPECT_EQ(tree->right->right->left, nullptr);
+    EXPECT_EQ(tree->right->right->right, nullptr);
     EXPECT_EQ(tree->right->left->left, nullptr);
     EXPECT_NE(tree->right->left->right, nullptr);
-
     EXPECT_EQ(tree->right->left->right->left, nullptr);
     EXPECT_EQ(tree->right->left->right->right, nullptr);
 
@@ -85,6 +93,7 @@ TEST_F(FunctionalTest, NormalTree)
     EXPECT_STREQ(tree->right->name, "five");
     EXPECT_STREQ(tree->right->left->name, "six");
     EXPECT_STREQ(tree->right->left->right->name, "seven");
+    EXPECT_STREQ(tree->right->right->name, "eight");
 
     FreeTree(tree);
 }
@@ -122,7 +131,14 @@ TEST_F(CheckAnswer, OneEmptyBranch)
 
 TEST_F(CheckAnswer, UnidirectionalTree)
 {
+    int res = Solution("test_files/unidirectional_tree/Input.txt", "test_files/unidirectional_tree/Output.txt");
+    EXPECT_EQ(res, 0);
+    EXPECT_TRUE(FileCompare("test_files/unidirectional_tree/Output.txt", "test_files/unidirectional_tree/CorrectOutput.txt"));
+}
+
+TEST_F(CheckAnswer, NormalTree)
+{
     int res = Solution("test_files/normal_tree/Input.txt", "test_files/normal_tree/Output.txt");
     EXPECT_EQ(res, 0);
-    //EXPECT_TRUE(FileCompare("test_files/normal_tree/Output.txt", "test_files/normal_tree/CorrectOutput.txt"));
+    EXPECT_TRUE(FileCompare("test_files/normal_tree/Output.txt", "test_files/normal_tree/CorrectOutput.txt"));
 }

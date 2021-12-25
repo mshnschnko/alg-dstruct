@@ -24,7 +24,7 @@ typedef struct
 	tree_t* tree;
 } treePrint_t;
 
-tree_t* TreeParser();
+tree_t* TreeParser(void);
 tree_t* ReadBinaryTree(const char* inputFileName);
 int FillTreePrint(tree_t* root, int space, int len, int orient);
 void FindMax(tree_t* tree);

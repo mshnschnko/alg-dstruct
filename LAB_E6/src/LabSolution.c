@@ -2,11 +2,13 @@
 
 char* fileText;
 int positionInFile;
-int maxWordSize = 0;
+int maxWordSize;
 int recursErr = !RECURSION_ERROR;
-int nodes = 0;
+int nodes;
+treePrint_t* treePrint;
+int elem;
 
-tree_t* TreeParser()
+tree_t* TreeParser(void)
 {
 	if (fileText[positionInFile] == '\'')
 	{
@@ -62,18 +64,12 @@ tree_t* ReadBinaryTree(const char* inputFileName)
 {
 	FILE* treeFile = fopen(inputFileName, "r");
 	if (treeFile == NULL)
-	{
-		//printf("Error in opening file");
 		return NULL;
-	}
 	fseek(treeFile, 0, SEEK_END);
 	int size = ftell(treeFile);
 	rewind(treeFile);
 	if (size < 1)
-	{
-		//printf("Error: empty file");
 		return NULL;
-	}
 	fileText = malloc((size + 2) * sizeof(char));
 	fscanf(treeFile, "%s", fileText);
 	fclose(treeFile);
@@ -82,9 +78,6 @@ tree_t* ReadBinaryTree(const char* inputFileName)
 	free(fileText);
 	return tree;
 }
-
-treePrint_t* treePrint;
-int elem = 0;
 
 int FillTreePrint(tree_t* root, int space, int len, int orient)
 {
@@ -197,15 +190,17 @@ void FreeTree(tree_t* tree)
 void FreePrint(int count)
 {
 	for (int i = 0; i < count; i++)
-	{
 		free(treePrint[i].str);
-		//FreeTree(treePrint[i].tree);
-	}
 	free(treePrint);
 }
 
 int Solution(const char* inputFileName, const char* outputFileName)
 {
+	nodes = 0;
+	maxWordSize = 0;
+	positionInFile = 0;
+	recursErr = !RECURSION_ERROR;
+	elem = 0;
 	tree_t* tree = ReadBinaryTree(inputFileName);
 	if (!tree)
 		return -1;
@@ -221,9 +216,7 @@ int Solution(const char* inputFileName, const char* outputFileName)
 		FreePrint(elem);
 		return -1;
 	}
-	//_PrintTree(stdout, tree, 0, 1);
 	FreeTree(tree);
-	//free(treePrint);
 	FreePrint(nodes);
 	fclose(output);
 	return 0;
