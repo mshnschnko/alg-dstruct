@@ -118,8 +118,13 @@ int Distribution(unsigned tasks, unsigned fullTime, unsigned* timeOfTasks)
 		for (j = 0; j < fullTime; j++)
 		{
 			if (j + 1 >= timeOfTasks[rowIndexes[i] - 1])
-				table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] :
+			{
+				if (j < timeOfTasks[rowIndexes[i] - 1])
+					table[i][j] = table[i - 1][j] > timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] : timeOfTasks[rowIndexes[i] - 1];
+				else
+					table[i][j] = table[i - 1][j] > table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1] ? table[i - 1][j] :
 						table[i - 1][j - timeOfTasks[rowIndexes[i] - 1]] + timeOfTasks[rowIndexes[i] - 1];
+			}
 			else
 				table[i][j] = table[i - 1][j];
 		}

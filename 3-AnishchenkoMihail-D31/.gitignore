@@ -1,0 +1,8 @@
+.vs
+*sln
+*vcxproj*
+**Debug
+**Release
+**/input.txt
+**/output.txt
+*googletest
