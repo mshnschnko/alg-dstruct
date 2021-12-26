@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "LabE6.h"
+#include "Lab_E6.h"
 #define BUFFER_SIZE 1024
 
 class FunctionalTest : public ::testing::Test {
@@ -20,7 +20,7 @@ private:
     _CrtMemState m_before, m_after, m_diff;
 };
 
-class CheckAnswer : public FunctionalTest{};
+class CheckAnswer : public FunctionalTest {};
 
 TEST_F(FunctionalTest, EmptyTree)
 {

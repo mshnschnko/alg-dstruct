@@ -1,4 +1,4 @@
-#include "LabE6.h"
+#include "Lab_E6.h"
 
 char* fileText;
 int positionInFile;
@@ -184,7 +184,7 @@ void FreeTree(tree_t* tree)
 		FreeTree(tree->right);
 	if (tree->name)
 		free(tree->name);
-	free (tree);
+	free(tree);
 }
 
 void FreePrint(int count)
