@@ -60,6 +60,8 @@ tree_t* TreeParser(void)
 	tree_t* right = TreeParser();
 	if (recursErr)
 	{
+		free(left->name);
+		free(left);
 		free(tree->name);
 		free(tree);
 		return NULL;
