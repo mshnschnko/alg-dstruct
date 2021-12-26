@@ -38,6 +38,7 @@ tree_t* TreeParser(void)
 	tree->name = malloc((size_of_name + 1) * sizeof(char));
 	if (!(tree->name))
 	{
+		free(tree);
 		recursErr = RECURSION_ERROR;
 		return NULL;
 	}
@@ -51,10 +52,18 @@ tree_t* TreeParser(void)
 	positionInFile++;
 	tree_t* left = TreeParser();
 	if (recursErr)
+	{
+		free(tree->name);
+		free(tree);
 		return NULL;
+	}
 	tree_t* right = TreeParser();
 	if (recursErr)
+	{
+		free(tree->name);
+		free(tree);
 		return NULL;
+	}
 	tree->left = left;
 	tree->right = right;
 	return tree;
@@ -63,7 +72,7 @@ tree_t* TreeParser(void)
 tree_t* ReadBinaryTree(const char* inputFileName)
 {
 	FILE* treeFile = fopen(inputFileName, "r");
-	if (treeFile == NULL)
+	if (!treeFile)
 		return NULL;
 	fseek(treeFile, 0, SEEK_END);
 	int size = ftell(treeFile);
@@ -71,6 +80,11 @@ tree_t* ReadBinaryTree(const char* inputFileName)
 	if (size < 1)
 		return NULL;
 	fileText = malloc((size + 2) * sizeof(char));
+	if (!fileText)
+	{
+		fclose(treeFile);
+		return NULL;
+	}
 	fscanf(treeFile, "%s", fileText);
 	fclose(treeFile);
 	positionInFile = 0;
@@ -201,6 +215,7 @@ int Solution(const char* inputFileName, const char* outputFileName)
 	positionInFile = 0;
 	recursErr = !RECURSION_ERROR;
 	elem = 0;
+	fileText = NULL;
 	tree_t* tree = ReadBinaryTree(inputFileName);
 	if (!tree)
 		return -1;
