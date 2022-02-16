@@ -54,7 +54,7 @@ node* balance(node* p) {
             p->left = rotateleft(p->left);
         return rotateright(p);
     }
-    return p; // балансировка не нужна
+    return p;
 }
 
 node* insert(node* p, int k) {
@@ -95,7 +95,7 @@ node* delete(node* p, int k) {
         p->left = delete(p->left,k);
     else if(k > p->key)
         p->right = delete(p->right,k);
-    else //  k == p->key
+    else
     {
         node* q = p->left;
         node* r = p->right;
