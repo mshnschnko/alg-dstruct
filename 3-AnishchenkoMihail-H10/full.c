@@ -72,7 +72,7 @@ node* insert(node* p, int k) {
     }
     if(k < p->key)
         p->left = insert(p->left, k);
-    else
+    if(k > p->key)
         p->right = insert(p->right, k);
     return balance(p);
 }
