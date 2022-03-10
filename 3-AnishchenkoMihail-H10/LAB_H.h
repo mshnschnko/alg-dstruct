@@ -22,4 +22,3 @@ node* removemin(node* p);
 node* delete(node* p, int k);
 void search(node* p, int k);
 void treedestroy(node* p);
-int lab();
