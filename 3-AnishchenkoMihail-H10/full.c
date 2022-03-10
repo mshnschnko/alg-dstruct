@@ -13,7 +13,7 @@ unsigned char height(node* p) {
 }
 
 int bfactor(node* p) {
-    return height(p->right)-height(p->left);
+    return height(p->right) - height(p->left);
 }
 
 void fixheight(node* p) {
@@ -42,14 +42,12 @@ node* rotateleft(node* q) {
 
 node* balance(node* p) {
     fixheight(p);
-    if(bfactor(p) == 2)
-    {
+    if(bfactor(p) == 2) {
         if(bfactor(p->right) < 0)
             p->right = rotateright(p->right);
         return rotateleft(p);
     }
-    if(bfactor(p) == -2)
-    {
+    if(bfactor(p) == -2) {
         if(bfactor(p->left) > 0)
             p->left = rotateleft(p->left);
         return rotateright(p);
@@ -82,7 +80,7 @@ node* findmin(node* p) {
 }
 
 node* removemin(node* p) {
-    if(p->left == 0)
+    if(!p->left)
         return p->right;
     p->left = removemin(p->left);
     return balance(p);
@@ -95,8 +93,7 @@ node* delete(node* p, int k) {
         p->left = delete(p->left,k);
     else if(k > p->key)
         p->right = delete(p->right,k);
-    else
-    {
+    else {
         node* q = p->left;
         node* r = p->right;
         free(p);
