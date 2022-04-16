@@ -2,32 +2,30 @@
 
 node* createnode(int value) {
     node* newnode = (node*)malloc(sizeof(node));
-    if (newnode) {
-        newnode->first = NULL;
-        newnode->second = NULL;
-        newnode->third = NULL;
-        newnode->fourth = NULL;
-        newnode->parent = NULL;
-        newnode->key[0] = value;
-        newnode->size = 1;
-        return newnode;
-    }
-    return NULL;
+    if (!newnode)
+        return NULL;
+    newnode->first = NULL;
+    newnode->second = NULL;
+    newnode->third = NULL;
+    newnode->fourth = NULL;
+    newnode->parent = NULL;
+    newnode->key[0] = value;
+    newnode->size = 1;
+    return newnode;
 }
 
 node* createnode2(int value, node* first, node* second, node* third, node* fourth, node* parent) {
     node* newnode = (node*)malloc(sizeof(node));
-    if (newnode) {
-        newnode->first = first;
-        newnode->second = second;
-        newnode->third = third;
-        newnode->fourth = fourth;
-        newnode->parent = parent;
-        newnode->key[0] = value;
-        newnode->size = 1;
-        return newnode;
-    }
-    return NULL;
+    if (!newnode)
+        return NULL;
+    newnode->first = first;
+    newnode->second = second;
+    newnode->third = third;
+    newnode->fourth = fourth;
+    newnode->parent = parent;
+    newnode->key[0] = value;
+    newnode->size = 1;
+    return newnode;
 }
 
 char find(int value, int* key, int size) {
