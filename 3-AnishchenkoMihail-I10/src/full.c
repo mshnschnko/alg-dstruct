@@ -13,7 +13,6 @@ typedef struct node {
     struct node* third;
     struct node* fourth;
     struct node* parent;
-
 }node;
 
 char find(int value, int* key, int size);
