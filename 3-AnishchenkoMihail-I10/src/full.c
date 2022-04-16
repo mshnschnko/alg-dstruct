@@ -6,64 +6,64 @@
 #define False !(True)
 
 typedef struct node {
-    int size;      // количество занятых ключей
+    int size;
     int key[3];
-    struct node* first;   // *first <= key[0];
-    struct node* second;  // key[0] <= *second < key[1];
-    struct node* third;   // key[1] <= *third < key[2];
-    struct node* fourth;  // kye[2] <= *fourth.
+    struct node* first;
+    struct node* second;
+    struct node* third;
+    struct node* fourth;
     struct node* parent;
 
 }node;
 
-char find(int value, int* key, int size);  // поиск ключа
+char find(int value, int* key, int size);
 void swap(int* x, int* y);
 void sort2(int* x, int* y);
 void sort3(int* x, int* y, int* z);
-void sort_keys(int size, int* key); // сортировка ключей
-node* create_node(int value); //создание узла, если дерево пустое
-node* create_node2(int value, node* first, node* second, node* third, node* fourth, node* parent); //создание узла с параметрами
-void insert_key_to_node(int value, node* tree_node); //вставка ключа в узел
-void remove_key_from_node(int value, node* tree_node); //удаление ключа из узла
-void become_node2(int value, int* key, node* tree_node, node* first_, node* second_);
-char is_leaf(node* tree);  // проверка на лист
-node* split(node* item); // разделение узла при переполнении
-node* insert_node(node* tree, int value); // вставка узла
-node* search(node* tree, int value); // поиск элемента
-node* search_min(node* tree);// поиск минимального элемента в поддереве
-node* merge(node* leaf); // слияние
-node* redistribute(node* leaf); // перераспеределение ключей в узлах
-node* fix(node* leaf); // восстановаление дерева после удаления
-node* remove_node(node* tree, int value); // удаления узла
-void destroy_tree(node* t); // удаление дерева
-void print_tree(node* tree); // печать дерева
+void sortkeys(int size, int* key);
+node* createnode(int value);
+node* createnode2(int value, node* first, node* second, node* third, node* fourth, node* parent);
+void insertkey(int value, node* treenode);
+void removekey(int value, node* treenode);
+void becomenode2(int value, int* key, node* treenode, node* first, node* second);
+char isleaf(node* tree);
+node* split(node* item);
+node* insertnode(node* tree, int value);
+node* search(node* tree, int value);
+node* searchmin(node* tree);
+node* merge(node* leaf);
+node* redistribute(node* leaf);
+node* fix(node* leaf);
+node* removenode(node* tree, int value);
+void treedestroy(node* t);
+void printtree(node* tree);
 
-node* create_node(int value) {
-    node* new_node = (node*)malloc(sizeof(node));
-    if (new_node) {
-        new_node->first = NULL;
-        new_node->second = NULL;
-        new_node->third = NULL;
-        new_node->fourth = NULL;
-        new_node->parent = NULL;
-        new_node->key[0] = value;
-        new_node->size = 1;
-        return new_node;
+node* createnode(int value) {
+    node* newnode = (node*)malloc(sizeof(node));
+    if (newnode) {
+        newnode->first = NULL;
+        newnode->second = NULL;
+        newnode->third = NULL;
+        newnode->fourth = NULL;
+        newnode->parent = NULL;
+        newnode->key[0] = value;
+        newnode->size = 1;
+        return newnode;
     }
     return NULL;
 }
 
-node* create_node2(int value, node* first, node* second, node* third, node* fourth, node* parent) {
-    node* new_node = (node*)malloc(sizeof(node));
-    if (new_node) {
-        new_node->first = first;
-        new_node->second = second;
-        new_node->third = third;
-        new_node->fourth = fourth;
-        new_node->parent = parent;
-        new_node->key[0] = value;
-        new_node->size = 1;
-        return new_node;
+node* createnode2(int value, node* first, node* second, node* third, node* fourth, node* parent) {
+    node* newnode = (node*)malloc(sizeof(node));
+    if (newnode) {
+        newnode->first = first;
+        newnode->second = second;
+        newnode->third = third;
+        newnode->fourth = fourth;
+        newnode->parent = parent;
+        newnode->key[0] = value;
+        newnode->size = 1;
+        return newnode;
     }
     return NULL;
 }
@@ -95,7 +95,7 @@ void sort3(int* x, int* y, int* z) {
         swap(y, z);
 }
 
-void sort_keys(int size, int* key) { // сортировка ключей в вершинах
+void sortkeys(int size, int* key) {
     if (size == 1)
         return;
     if (size == 2)
@@ -104,69 +104,69 @@ void sort_keys(int size, int* key) { // сортировка ключей в вершинах
         sort3(&key[0], &key[1], &key[2]);
 }
 
-void insert_key_to_node(int value, node* tree_node) {  // вставка ключа в узел
-    if (tree_node == NULL)
+void insertkey(int value, node* treenode) {
+    if (!treenode)
         return;
-    tree_node->key[tree_node->size] = value;
-    tree_node->size++;
-    sort_keys(tree_node->size, tree_node->key);
+    treenode->key[treenode->size] = value;
+    treenode->size++;
+    sortkeys(treenode->size, treenode->key);
 }
 
-void remove_key_from_node(int value, node* tree_node) {// удаление ключа из узла
-    if (tree_node == NULL)
+void removekey(int value, node* treenode) {
+    if (!treenode)
         return;
-    if (tree_node->size >= 1 && tree_node->key[0] == value) {
-        tree_node->key[0] = tree_node->key[1];
-        tree_node->key[1] = tree_node->key[2];
-        tree_node->size--;
+    if (treenode->size >= 1 && treenode->key[0] == value) {
+        treenode->key[0] = treenode->key[1];
+        treenode->key[1] = treenode->key[2];
+        treenode->size--;
     }
-    else if (tree_node->size == 2 && tree_node->key[1] == value) {
-        tree_node->key[1] = tree_node->key[2];
-        tree_node->size--;
+    else if (treenode->size == 2 && treenode->key[1] == value) {
+        treenode->key[1] = treenode->key[2];
+        treenode->size--;
     }
 }
 
-void become_node2(int value, int* key, node* tree_node, node* first_, node* second_) {
+void becomenode2(int value, int* key, node* treenode, node* first, node* second) {
     key[0] = value;
-    tree_node->first = first_;
-    tree_node->second = second_;
-    tree_node->third = NULL;
-    tree_node->fourth = NULL;
-    tree_node->parent = NULL;
-    tree_node->size = 1;
+    treenode->first = first;
+    treenode->second = second;
+    treenode->third = NULL;
+    treenode->fourth = NULL;
+    treenode->parent = NULL;
+    treenode->size = 1;
 }
 
-char is_leaf(node* tree) { // проверка на лист
-    if (tree == NULL)
+char isleaf(node* tree) {
+    if (!tree)
         return False;
-    if ((tree->first == NULL) && (tree->second == NULL) && (tree->third == NULL))
+    if ((!tree->first) && (!tree->second) && (!tree->third))
         return True;
     return False;
 }
 
-node* insert_node(node* tree, int value) {// вставка узла
-    if (tree == NULL)
-        return create_node(value); // если дерево пусто, то создаем первую 2-3-вершину (корень)
+node* insertnode(node* tree, int value) {
+    if (!tree)
+        return createnode(value);
     if (search(tree, value))
         return split(tree);
-    if (is_leaf(tree))
-        insert_key_to_node(value, tree);
+    if (isleaf(tree))
+        insertkey(value, tree);
     else if (value <= tree->key[0])
-        insert_node(tree->first, value);
+        insertnode(tree->first, value);
     else if ((tree->size == 1) || ((tree->size == 2) && value <= tree->key[1]))
-        insert_node(tree->second, value);
+        insertnode(tree->second, value);
     else
-        insert_node(tree->third, value);
+        insertnode(tree->third, value);
     return split(tree);
 }
 
 node* split(node* item) {
-    if (item == NULL)
+    if (!item)
         return NULL;
     if (item->size < 3)
         return item;
-    node* x = create_node2(item->key[0], item->first, item->second, NULL, NULL, item->parent); // Создаем две новые вершины
-    node* y = create_node2(item->key[2], item->third, item->fourth, NULL, NULL, item->parent);
+    node* x = createnode2(item->key[0], item->first, item->second, NULL, NULL, item->parent);
+    node* y = createnode2(item->key[2], item->third, item->fourth, NULL, NULL, item->parent);
     if (x->first)
         x->first->parent = x;
     if (x->second)
@@ -176,20 +176,20 @@ node* split(node* item) {
     if (y->second)
         y->second->parent = y;
     if (item->parent != NULL) {
-        insert_key_to_node(item->key[1], item->parent);
+        insertkey(item->key[1], item->parent);
         if (item->parent->first == item)
             item->parent->first = NULL;
         else if (item->parent->second == item)
             item->parent->second = NULL;
         else if (item->parent->third == item)
             item->parent->third = NULL;
-        if (item->parent->first == NULL) {
+        if (!item->parent->first) {
             item->parent->fourth = item->parent->third;
             item->parent->third = item->parent->second;
             item->parent->second = y;
             item->parent->first = x;
         }
-        else if (item->parent->second == NULL) {
+        else if (!item->parent->second) {
             item->parent->fourth = item->parent->third;
             item->parent->third = y;
             item->parent->second = x;
@@ -205,13 +205,13 @@ node* split(node* item) {
     else {
         x->parent = item;
         y->parent = item;
-        become_node2(item->key[1], item->key, item, x, y);
+        becomenode2(item->key[1], item->key, item, x, y);
         return item;
     }
 }
 
-node* search(node* tree, int value) { // поиск ключа
-    if (tree == NULL)
+node* search(node* tree, int value) {
+    if (!tree)
         return NULL;
     if (find(value, tree->key, tree->size))
         return tree;
@@ -223,43 +223,43 @@ node* search(node* tree, int value) { // поиск ключа
         return search(tree->third, value);
 }
 
-node* search_min(node* tree) {
-    if (tree == NULL)
+node* searchmin(node* tree) {
+    if (!tree)
         return tree;
-    if ((tree->first) == NULL)
+    if (!tree->first)
         return tree;
     else
-        return search_min(tree->first);
+        return searchmin(tree->first);
 }
 
-node* remove_node(node* tree, int value) {
-    if (tree == NULL)
+node* removenode(node* tree, int value) {
+    if (!tree)
         return NULL;
     node* item = search(tree, value);
-    if (item == NULL)
+    if (!item)
         return tree;
     node* min = NULL;
     if (item->key[0] == value)
-        min = search_min(item->second); // эквивалентный ключ
+        min = searchmin(item->second);
     else
-        min = search_min(item->third);
-    if (min != NULL) { // меняем ключи местами
+        min = searchmin(item->third);
+    if (min != NULL) {
         int* z = (value == item->key[0] ? &(item->key[0]) : &(item->key[1]));
         swap(z, &min->key[0]);
-        item = min; // перемещаем указатель на лист
+        item = min;
     }
-    remove_key_from_node(value, item); // удаляем требуемый ключ из листа
+    removekey(value, item);
     return fix(item);
 }
 
 node* fix(node* leaf) {
-    if (leaf == NULL)
+    if (!leaf)
         return NULL;
-    if (leaf->size == 0 && leaf->parent == NULL) { // единственный ключ
+    if (leaf->size == 0 && !leaf->parent) {
         free(leaf);
         return NULL;
     }
-    if (leaf->size != 0) { // два ключа
+    if (leaf->size != 0) {
         if (leaf->parent)
             return fix(leaf->parent);
         else
@@ -267,20 +267,20 @@ node* fix(node* leaf) {
     }
     node* parent = leaf->parent;
     if (parent->first->size == 2 || parent->second->size == 2 || parent->size == 2)
-        leaf = redistribute(leaf); // достаточно перераспределить ключи
+        leaf = redistribute(leaf);
     else if (parent->size == 2 && parent->third->size == 2)
-        leaf = redistribute(leaf); // аналогично
+        leaf = redistribute(leaf);
     else
         leaf = merge(leaf);
     return fix(leaf);
 }
 
 node* merge(node* leaf) {
-    if (leaf == NULL)
+    if (!leaf)
         return NULL;
     node* parent = leaf->parent;
     if (parent->first == leaf) {
-        insert_key_to_node(parent->key[0], parent->second);
+        insertkey(parent->key[0], parent->second);
         parent->second->third = parent->second->second;
         parent->second->second = parent->second->first;
         if (leaf->first != NULL)
@@ -289,23 +289,23 @@ node* merge(node* leaf) {
             (leaf->second != NULL) parent->second->first = leaf->second;
         if (parent->second->first != NULL)
             parent->second->first->parent = parent->second;
-        remove_key_from_node(parent->key[0], parent);
+        removekey(parent->key[0], parent);
         free(parent->first);
         parent->first = NULL;
     }
     else if (parent->second == leaf) {
-        insert_key_to_node(parent->key[0], parent->first);
+        insertkey(parent->key[0], parent->first);
         if (leaf->first != NULL)
             parent->first->third = leaf->first;
         else if (leaf->second != NULL)
             parent->first->third = leaf->second;
         if (parent->first->third != NULL)
             parent->first->third->parent = parent->first;
-        remove_key_from_node(parent->key[0], parent);
+        removekey(parent->key[0], parent);
         free(parent->second);
         parent->second = NULL;
     }
-    if (parent->parent == NULL) {
+    if (!parent->parent) {
         node* tmp = NULL;
         if (parent->first != NULL)
             tmp = parent->first;
@@ -319,7 +319,7 @@ node* merge(node* leaf) {
 }
 
 node* redistribute(node* leaf) {
-    if (leaf == NULL)
+    if (!leaf)
         return NULL;
     node* parent = leaf->parent;
     node* first = parent->first;
@@ -330,7 +330,7 @@ node* redistribute(node* leaf) {
             parent->first = parent->second;
             parent->second = parent->third;
             parent->third = NULL;
-            insert_key_to_node(parent->key[0], parent->first);
+            insertkey(parent->key[0], parent->first);
             parent->first->third = parent->first->second;
             parent->first->second = parent->first->first;
             if (leaf->first != NULL)
@@ -339,11 +339,11 @@ node* redistribute(node* leaf) {
                 (leaf->second != NULL) parent->first->first = leaf->second;
             if (parent->first->first != NULL)
                 parent->first->first->parent = parent->first;
-            remove_key_from_node(parent->key[0], parent);//delete first;
+            removekey(parent->key[0], parent);
         }
         else if (second == leaf) {
-            insert_key_to_node(parent->key[0], first);
-            remove_key_from_node(parent->key[0], parent);
+            insertkey(parent->key[0], first);
+            removekey(parent->key[0], parent);
             if (leaf->first != NULL)
                 first->third = leaf->first;
             else if (leaf->second != NULL)
@@ -355,9 +355,9 @@ node* redistribute(node* leaf) {
             free(second);
         }
         else if (third == leaf) {
-            insert_key_to_node(parent->key[1], second);
+            insertkey(parent->key[1], second);
             parent->third = NULL;
-            remove_key_from_node(parent->key[1], parent);
+            removekey(parent->key[1], parent);
             if (leaf->first != NULL)
                 second->third = leaf->first;
             else if (leaf->second != NULL)
@@ -373,10 +373,10 @@ node* redistribute(node* leaf) {
                 leaf->second = leaf->first;
                 leaf->first = NULL;
             }
-            insert_key_to_node(parent->key[1], leaf);
+            insertkey(parent->key[1], leaf);
             if (second->size == 2) {
                 parent->key[1] = second->key[1];
-                remove_key_from_node(second->key[1], second);
+                removekey(second->key[1], second);
                 leaf->first = second->third;
                 second->third = NULL;
                 if (leaf->first != NULL)
@@ -390,7 +390,7 @@ node* redistribute(node* leaf) {
                     leaf->first->parent = leaf;
                 second->key[0] = parent->key[0];
                 parent->key[0] = first->key[1];
-                remove_key_from_node(first->key[1], first);
+                removekey(first->key[1], first);
                 second->first = first->third;
                 if (second->first != NULL)
                     second->first->parent = second;
@@ -399,13 +399,13 @@ node* redistribute(node* leaf) {
         }
         else if (second == leaf) {
             if (third->size == 2) {
-                if (leaf->first == NULL) {
+                if (!leaf->first) {
                     leaf->first = leaf->second;
                     leaf->second = NULL;
                 }
-                insert_key_to_node(parent->key[1], second);
+                insertkey(parent->key[1], second);
                 parent->key[1] = third->key[0];
-                remove_key_from_node(third->key[0], third);
+                removekey(third->key[0], third);
                 second->second = third->first;
                 if (second->second != NULL)
                     second->second->parent = second;
@@ -414,13 +414,13 @@ node* redistribute(node* leaf) {
                 third->third = NULL;
             }
             else if (first->size == 2) {
-                if (leaf->second == NULL) {
+                if (!leaf->second) {
                     leaf->second = leaf->first;
                     leaf->first = NULL;
                 }
-                insert_key_to_node(parent->key[0], second);
+                insertkey(parent->key[0], second);
                 parent->key[0] = first->key[1];
-                remove_key_from_node(first->key[1], first);
+                removekey(first->key[1], first);
                 second->first = first->third;
                 if (second->first != NULL)
                     second->first->parent = second;
@@ -428,14 +428,14 @@ node* redistribute(node* leaf) {
             }
         }
         else if (first == leaf) {
-            if (leaf->first == NULL) {
+            if (!leaf->first) {
                 leaf->first = leaf->second;
                 leaf->second = NULL;
             }
-            insert_key_to_node(parent->key[0], first);
+            insertkey(parent->key[0], first);
             if (second->size == 2) {
                 parent->key[0] = second->key[0];
-                remove_key_from_node(second->key[0], second);
+                removekey(second->key[0], second);
                 first->second = second->first;
                 if (first->second != NULL)
                     first->second->parent = first;
@@ -447,7 +447,7 @@ node* redistribute(node* leaf) {
                 parent->key[0] = second->key[0];
                 second->key[0] = parent->key[1];
                 parent->key[1] = third->key[0];
-                remove_key_from_node(third->key[0], third);
+                removekey(third->key[0], third);
                 first->second = second->first;
                 if (first->second != NULL)
                     first->second->parent = first;
@@ -462,11 +462,11 @@ node* redistribute(node* leaf) {
         }
     }
     else if (parent->size == 1) {
-        insert_key_to_node(parent->key[0], leaf);
+        insertkey(parent->key[0], leaf);
         if (first == leaf && second->size == 2) {
             parent->key[0] = second->key[0];
-            remove_key_from_node(second->key[0], second);
-            if (leaf->first == NULL)
+            removekey(second->key[0], second);
+            if (!leaf->first)
                 leaf->first = leaf->second;
             leaf->second = second->first;
             second->first = second->second;
@@ -477,8 +477,8 @@ node* redistribute(node* leaf) {
         }
         else if (second == leaf && first->size == 2) {
             parent->key[0] = first->key[1];
-            remove_key_from_node(first->key[1], first);
-            if (leaf->second == NULL)
+            removekey(first->key[1], first);
+            if (!leaf->second)
                 leaf->second = leaf->first;
             leaf->first = first->third;
             first->third = NULL;
@@ -489,23 +489,22 @@ node* redistribute(node* leaf) {
     return parent;
 }
 
-void print_tree(node* tree) {
-    if (tree == NULL)
+void printtree(node* tree) {
+    if (!tree)
         return;
-    print_tree(tree->first);
-    for (int i = 0; i < tree->size; i++) {
+    printtree(tree->first);
+    for (int i = 0; i < tree->size; i++)
         printf("%d ", tree->key[i]);
-    }
-    print_tree(tree->second);
-    print_tree(tree->third);
+    printtree(tree->second);
+    printtree(tree->third);
 }
 
-void destroy_tree(node* tree) {
-    if (tree == NULL)
+void treedestroy(node* tree) {
+    if (!tree)
         return;
-    destroy_tree(tree->first);
-    destroy_tree(tree->second);
-    destroy_tree(tree->third);
+    treedestroy(tree->first);
+    treedestroy(tree->second);
+    treedestroy(tree->third);
     free(tree);
 }
 
@@ -517,10 +516,10 @@ int lab() {
         sscanf(command, "%c%i", &ch, &key);
         switch (ch) {
         case 'a':
-            t = insert_node(t, key);
+            t = insertnode(t, key);
             break;
         case 'r':
-            t = remove_node(t, key);
+            t = removenode(t, key);
             break;
         case 'f':
             if (search(t, key))
@@ -529,15 +528,15 @@ int lab() {
                 fprintf(stdout, "no\n");
             break;
         case 'p':
-            print_tree(t);
+            printtree(t);
             fprintf(stdout, "\n");
             break;
         default:
-            destroy_tree(t);
+            treedestroy(t);
             return 0;
         }
     }
-    destroy_tree(t);
+    treedestroy(t);
     return 0;
 }
 
