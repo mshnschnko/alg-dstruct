@@ -35,7 +35,7 @@ node* redistribute(node* leaf);
 node* fix(node* leaf);
 node* removenode(node* tree, int value);
 void treedestroy(node* t);
-void printtree(node* tree);
+void printtree(node* tree, int n);
 
 node* createnode(int value) {
     node* newnode = (node*)malloc(sizeof(node));
@@ -163,7 +163,13 @@ node* split(node* item) {
     if (item->size < 3)
         return item;
     node* x = createnode2(item->key[0], item->first, item->second, NULL, NULL, item->parent);
+    if (!x)
+        return NULL;
     node* y = createnode2(item->key[2], item->third, item->fourth, NULL, NULL, item->parent);
+    if (!y) {
+        free(x);
+        return NULL;
+    }
     if (x->first)
         x->first->parent = x;
     if (x->second)
@@ -172,7 +178,7 @@ node* split(node* item) {
         y->first->parent = y;
     if (y->second)
         y->second->parent = y;
-    if (item->parent != NULL) {
+    if (item->parent) {
         insertkey(item->key[1], item->parent);
         if (item->parent->first == item)
             item->parent->first = NULL;
@@ -240,7 +246,7 @@ node* removenode(node* tree, int value) {
         min = searchmin(item->second);
     else
         min = searchmin(item->third);
-    if (min != NULL) {
+    if (min) {
         int* z = (value == item->key[0] ? &(item->key[0]) : &(item->key[1]));
         swap(z, &min->key[0]);
         item = min;
@@ -280,11 +286,11 @@ node* merge(node* leaf) {
         insertkey(parent->key[0], parent->second);
         parent->second->third = parent->second->second;
         parent->second->second = parent->second->first;
-        if (leaf->first != NULL)
+        if (leaf->first)
             parent->second->first = leaf->first;
         else if
-            (leaf->second != NULL) parent->second->first = leaf->second;
-        if (parent->second->first != NULL)
+            (leaf->second) parent->second->first = leaf->second;
+        if (parent->second->first)
             parent->second->first->parent = parent->second;
         removekey(parent->key[0], parent);
         free(parent->first);
@@ -292,11 +298,11 @@ node* merge(node* leaf) {
     }
     else if (parent->second == leaf) {
         insertkey(parent->key[0], parent->first);
-        if (leaf->first != NULL)
+        if (leaf->first)
             parent->first->third = leaf->first;
-        else if (leaf->second != NULL)
+        else if (leaf->second)
             parent->first->third = leaf->second;
-        if (parent->first->third != NULL)
+        if (parent->first->third)
             parent->first->third->parent = parent->first;
         removekey(parent->key[0], parent);
         free(parent->second);
@@ -304,7 +310,7 @@ node* merge(node* leaf) {
     }
     if (!parent->parent) {
         node* tmp = NULL;
-        if (parent->first != NULL)
+        if (parent->first)
             tmp = parent->first;
         else
             tmp = parent->second;
@@ -330,22 +336,22 @@ node* redistribute(node* leaf) {
             insertkey(parent->key[0], parent->first);
             parent->first->third = parent->first->second;
             parent->first->second = parent->first->first;
-            if (leaf->first != NULL)
+            if (leaf->first)
                 parent->first->first = leaf->first;
             else if
-                (leaf->second != NULL) parent->first->first = leaf->second;
-            if (parent->first->first != NULL)
+                (leaf->second) parent->first->first = leaf->second;
+            if (parent->first->first)
                 parent->first->first->parent = parent->first;
             removekey(parent->key[0], parent);
         }
         else if (second == leaf) {
             insertkey(parent->key[0], first);
             removekey(parent->key[0], parent);
-            if (leaf->first != NULL)
+            if (leaf->first)
                 first->third = leaf->first;
-            else if (leaf->second != NULL)
+            else if (leaf->second)
                 first->third = leaf->second;
-            if (first->third != NULL)
+            if (first->third)
                 first->third->parent = first;
             parent->second = parent->third;
             parent->third = NULL;
@@ -355,18 +361,18 @@ node* redistribute(node* leaf) {
             insertkey(parent->key[1], second);
             parent->third = NULL;
             removekey(parent->key[1], parent);
-            if (leaf->first != NULL)
+            if (leaf->first)
                 second->third = leaf->first;
-            else if (leaf->second != NULL)
+            else if (leaf->second)
                 second->third = leaf->second;
-            if (second->third != NULL)
+            if (second->third)
                 second->third->parent = second;
             free(third);
         }
     }
     else if ((parent->size == 2) && ((first->size == 2) || (second->size == 2) || (third->size == 2))) {
         if (third == leaf) {
-            if (leaf->first != NULL) {
+            if (leaf->first) {
                 leaf->second = leaf->first;
                 leaf->first = NULL;
             }
@@ -376,20 +382,20 @@ node* redistribute(node* leaf) {
                 removekey(second->key[1], second);
                 leaf->first = second->third;
                 second->third = NULL;
-                if (leaf->first != NULL)
+                if (leaf->first)
                     leaf->first->parent = leaf;
             }
             else if (first->size == 2) {
                 parent->key[1] = second->key[0];
                 leaf->first = second->second;
                 second->second = second->first;
-                if (leaf->first != NULL)
+                if (leaf->first)
                     leaf->first->parent = leaf;
                 second->key[0] = parent->key[0];
                 parent->key[0] = first->key[1];
                 removekey(first->key[1], first);
                 second->first = first->third;
-                if (second->first != NULL)
+                if (second->first)
                     second->first->parent = second;
                 first->third = NULL;
             }
@@ -404,7 +410,7 @@ node* redistribute(node* leaf) {
                 parent->key[1] = third->key[0];
                 removekey(third->key[0], third);
                 second->second = third->first;
-                if (second->second != NULL)
+                if (second->second)
                     second->second->parent = second;
                 third->first = third->second;
                 third->second = third->third;
@@ -419,7 +425,7 @@ node* redistribute(node* leaf) {
                 parent->key[0] = first->key[1];
                 removekey(first->key[1], first);
                 second->first = first->third;
-                if (second->first != NULL)
+                if (second->first)
                     second->first->parent = second;
                 first->third = NULL;
             }
@@ -434,7 +440,7 @@ node* redistribute(node* leaf) {
                 parent->key[0] = second->key[0];
                 removekey(second->key[0], second);
                 first->second = second->first;
-                if (first->second != NULL)
+                if (first->second)
                     first->second->parent = first;
                 second->first = second->second;
                 second->second = second->third;
@@ -446,11 +452,11 @@ node* redistribute(node* leaf) {
                 parent->key[1] = third->key[0];
                 removekey(third->key[0], third);
                 first->second = second->first;
-                if (first->second != NULL)
+                if (first->second)
                     first->second->parent = first;
                 second->first = second->second;
                 second->second = third->first;
-                if (second->second != NULL)
+                if (second->second)
                     second->second->parent = second;
                 third->first = third->second;
                 third->second = third->third;
@@ -469,7 +475,7 @@ node* redistribute(node* leaf) {
             second->first = second->second;
             second->second = second->third;
             second->third = NULL;
-            if (leaf->second != NULL)
+            if (leaf->second)
                 leaf->second->parent = leaf;
         }
         else if (second == leaf && first->size == 2) {
@@ -479,21 +485,29 @@ node* redistribute(node* leaf) {
                 leaf->second = leaf->first;
             leaf->first = first->third;
             first->third = NULL;
-            if (leaf->first != NULL)
+            if (leaf->first)
                 leaf->first->parent = leaf;
         }
     }
     return parent;
 }
 
-void printtree(node* tree) {
+void printtree(node* tree, int n) {
+    int i;
     if (!tree)
         return;
-    printtree(tree->first);
-    for (int i = 0; i < tree->size; i++)
-        printf("%d ", tree->key[i]);
-    printtree(tree->second);
-    printtree(tree->third);
+    printtree(tree->first, n + 2);
+    for (i = 0; i < n; i++)
+        printf("  ");
+    printf("%d", tree->key[0]);
+    printf("\n");
+    printtree(tree->second, n + 2);
+    for (int i = 0; i < n; i++)
+        printf("  ");
+    if (tree->size == 2)
+        printf("%d", tree->key[1]);
+    printf("\n");
+    printtree(tree->third, n + 2);
 }
 
 void treedestroy(node* tree) {
@@ -525,7 +539,7 @@ int lab() {
                 fprintf(stdout, "no\n");
             break;
         case 'p':
-            printtree(t);
+            printtree(t, 1);
             fprintf(stdout, "\n");
             break;
         default:

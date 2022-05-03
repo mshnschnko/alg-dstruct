@@ -35,4 +35,4 @@ node* redistribute(node* leaf);
 node* fix(node* leaf);
 node* removenode(node* tree, int value);
 void treedestroy(node* t);
-void printtree(node* tree);
+void printtree(node* tree, int n);
