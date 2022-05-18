@@ -288,8 +288,8 @@ node* merge(node* leaf) {
         parent->second->second = parent->second->first;
         if (leaf->first)
             parent->second->first = leaf->first;
-        else if
-            (leaf->second) parent->second->first = leaf->second;
+        else if (leaf->second)
+            parent->second->first = leaf->second;
         if (parent->second->first)
             parent->second->first->parent = parent->second;
         removekey(parent->key[0], parent);
@@ -338,8 +338,8 @@ node* redistribute(node* leaf) {
             parent->first->second = parent->first->first;
             if (leaf->first)
                 parent->first->first = leaf->first;
-            else if
-                (leaf->second) parent->first->first = leaf->second;
+            else if (leaf->second)
+                parent->first->first = leaf->second;
             if (parent->first->first)
                 parent->first->first->parent = parent->first;
             removekey(parent->key[0], parent);
