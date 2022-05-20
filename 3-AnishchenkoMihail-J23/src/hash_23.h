@@ -10,13 +10,13 @@ typedef enum {
 	NOT_INTENTED = 0,
 	NOT_FREE,
 	FREE
-}codes;
+} codes;
 
 typedef struct Htable {
 	char* str;
 	unsigned size;
 	codes status;
-}Htable;
+} Htable;
 
 int Init(Htable** ht, int htSize);
 int AddTable(Htable* ht, char* str);
