@@ -62,6 +62,8 @@ int AddTable(Htable* ht, char* str) {
 	for (unsigned i = 0; i < htSize; i++) {
 		if (ht[x].status == NOT_INTENTED || ht[x].status == FREE) {
 			ht[x].str = (char*)calloc(strlen(str) + 1, sizeof(char));
+			if (!ht[x].str)
+				return 0;
 			strcpy(ht[x].str, str);
 			ht[x].status = NOT_FREE;
 			return 1;
