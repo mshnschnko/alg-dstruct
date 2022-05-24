@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <crtdbg.h>
 
+#define _CRTDBG_MAP_ALLOC
 #define STR_SIZE 1000
 #define OTHER_PRIME 999961
 
@@ -61,8 +63,10 @@ int AddTable(Htable* ht, char* str) {
 	y = Func2(str, htSize);
 	for (unsigned i = 0; i < htSize; i++) {
 		if (ht[x].status == NOT_INTENTED || ht[x].status == FREE) {
-			if (ht[x].str)
+			if (ht[x].status == FREE) {
 				free(ht[x].str);
+				ht[x].str = NULL;
+			}
 			ht[x].str = (char*)calloc(strlen(str) + 1, sizeof(char));
 			if (!ht[x].str)
 				return 0;
@@ -112,10 +116,17 @@ int RemoveTable(Htable* ht, char* str) {
 void DeleteTable(Htable* ht) {
 	if (ht) {
 		for (int i = 0; i < ht->size; i++)
-			if (ht[i].str)
+			if (ht[i].status != NOT_INTENTED)
 				free(ht[i].str);
 		free(ht);
 	}
+}
+
+void MemoryLeaks(void)
+{
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 }
 
 int main() {
@@ -143,9 +154,11 @@ int main() {
 			break;
 		default:
 			DeleteTable(ht);
+			MemoryLeaks();
 			return 0;
 		}
 	}
 	DeleteTable(ht);
+	MemoryLeaks();
 	return 0;
 }
