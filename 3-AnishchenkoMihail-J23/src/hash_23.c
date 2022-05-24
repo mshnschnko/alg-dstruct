@@ -74,6 +74,7 @@ int RemoveTable(Htable* ht, char* str) {
 	for (unsigned i = 0; i < htSize; i++) {
 		if (ht[x].status == NOT_FREE && strcmp(ht[x].str, str) == 0) {
 			ht[x].status = FREE;
+			free(ht[x].str);
 			return 1;
 		}
 		else if (ht[x].status == NOT_INTENTED)
@@ -83,8 +84,11 @@ int RemoveTable(Htable* ht, char* str) {
 	return 0;
 }
 
-void DeleteTable(Htable* ht) {
-	if (ht)
+void DeleteTable(Htable* ht, const int TABLE_SIZE) {
+	if (ht) {
+		for (int i = 0; i < TABLE_SIZE; i++)
+			if (ht[i].str)
+				free(ht[i].str);
 		free(ht);
-	return;
+	}
 }
