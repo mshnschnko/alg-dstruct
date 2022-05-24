@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define STR_SIZE 1000
+#define OTHER_PRIME 999961
 
 typedef enum {
 	NOT_INTENTED = 0,

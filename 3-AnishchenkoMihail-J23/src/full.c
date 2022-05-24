@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define STR_SIZE 1000
+#define OTHER_PRIME 999961
 
 typedef enum {
 	NOT_INTENTED = 0,
@@ -46,12 +47,14 @@ unsigned Func2(char* str, int size) {
 	unsigned res = 0;
 	for (int i = 0; str[i] != 0; i++) {
 		res += (unsigned)str[i] + res * 2;
-		res %= size;
+		res %= OTHER_PRIME;
 	}
 	return res;
 }
 
 int AddTable(Htable* ht, char* str) {
+	if (FindTable(ht, str))
+		return 0;
 	unsigned x, y;
 	unsigned htSize = ht->size;
 	x = Func1(str, htSize);
