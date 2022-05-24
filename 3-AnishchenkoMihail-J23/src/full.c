@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define STR_SIZE 100000
+#define STR_SIZE 1000
 
 typedef enum {
 	NOT_INTENTED = 0,
