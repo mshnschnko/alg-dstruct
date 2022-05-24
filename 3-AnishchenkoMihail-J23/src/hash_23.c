@@ -37,6 +37,8 @@ int AddTable(Htable* ht, char* str) {
 	y = Func2(str, htSize);
 	for (unsigned i = 0; i < htSize; i++) {
 		if (ht[x].status == NOT_INTENTED || ht[x].status == FREE) {
+			if (ht[x].str)
+				free(ht[x].str);
 			ht[x].str = (char*)calloc(strlen(str) + 1, sizeof(char));
 			if (!ht[x].str)
 				return 0;
@@ -74,7 +76,6 @@ int RemoveTable(Htable* ht, char* str) {
 	for (unsigned i = 0; i < htSize; i++) {
 		if (ht[x].status == NOT_FREE && strcmp(ht[x].str, str) == 0) {
 			ht[x].status = FREE;
-			free(ht[x].str);
 			return 1;
 		}
 		else if (ht[x].status == NOT_INTENTED)
@@ -84,9 +85,9 @@ int RemoveTable(Htable* ht, char* str) {
 	return 0;
 }
 
-void DeleteTable(Htable* ht, const int TABLE_SIZE) {
+void DeleteTable(Htable* ht) {
 	if (ht) {
-		for (int i = 0; i < TABLE_SIZE; i++)
+		for (int i = 0; i < ht->size; i++)
 			if (ht[i].str)
 				free(ht[i].str);
 		free(ht);
