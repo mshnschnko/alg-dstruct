@@ -22,4 +22,4 @@ int Init(Htable** ht, int htSize);
 int AddTable(Htable* ht, char* str);
 int FindTable(Htable* ht, char* str);
 int RemoveTable(Htable* ht, char* str);
-int DeleteTable(Htable** ht);
+void DeleteTable(Htable* ht);

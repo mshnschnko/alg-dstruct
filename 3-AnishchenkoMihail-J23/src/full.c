@@ -21,7 +21,7 @@ int Init(Htable** ht, int htSize);
 int AddTable(Htable* ht, char* str);
 int FindTable(Htable* ht, char* str);
 int RemoveTable(Htable* ht, char* str);
-int DeleteTable(Htable** ht);
+void DeleteTable(Htable* ht);
 
 int Init(Htable** ht, int htSize) {
 	*ht = (Htable*)malloc(sizeof(Htable) * htSize);
@@ -58,7 +58,7 @@ int AddTable(Htable* ht, char* str) {
 	y = Func2(str, htSize);
 	for (unsigned i = 0; i < htSize; i++) {
 		if (ht[x].status == NOT_INTENTED || ht[x].status == FREE) {
-			ht[x].str = (char*)calloc(sizeof(char), strlen(str));
+			ht[x].str = (char*)calloc(strlen(str) + 1, sizeof(char));
 			strcpy(ht[x].str, str);
 			ht[x].status = NOT_FREE;
 			return 1;
@@ -102,17 +102,17 @@ int RemoveTable(Htable* ht, char* str) {
 	return 0;
 }
 
-int DeleteTable(Htable** ht) {
-	free(*ht);
-	*ht = NULL;
-	return 1;
+void DeleteTable(Htable* ht) {
+	if (ht)
+		free(ht);
+	return;
 }
 
 int main() {
 	char query[STR_SIZE + 2] = " ";
 	char command;
 	char str[STR_SIZE] = { 0 };
-	const int TABLE_SIZE = 1000000; //must be big prime number
+	const int TABLE_SIZE = 999983;
 	Htable* ht;
 	if (!Init(&ht, TABLE_SIZE))
 		return 1;
@@ -132,10 +132,10 @@ int main() {
 				fprintf(stdout, "no\n");
 			break;
 		default:
-			DeleteTable(&ht);
+			DeleteTable(ht);
 			return 0;
 		}
 	}
-	DeleteTable(&ht);
+	DeleteTable(ht);
 	return 0;
 }
