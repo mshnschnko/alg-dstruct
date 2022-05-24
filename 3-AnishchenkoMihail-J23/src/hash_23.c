@@ -25,7 +25,7 @@ unsigned Func2(char* str, int size) {
 		res += (unsigned)str[i] + res * 2;
 		res %= OTHER_PRIME;
 	}
-	return res;
+	return res + 1;
 }
 
 int AddTable(Htable* ht, char* str) {
